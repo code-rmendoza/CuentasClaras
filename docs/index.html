@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CuentasClaras — El cuaderno digital de fiados para tu negocio</title>
+    <meta name="description" content="Lleva el control de fiados y cobros en tu bodega o comercio sin pagar nada. 100% gratis, sin internet y sin registros complicados.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #10B981;
+            --primary-dark: #059669;
+            --secondary: #1E3A5F;
+            --dark: #0C0A09;
+            --surface: #FAFAF9;
+            --text: #1C1917;
+            --text-muted: #78716C;
+            --radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--surface);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--secondary) 0%, #0F766E 100%);
+            color: white;
+            padding: 4rem 1.5rem;
+            text-align: center;
+            border-bottom-left-radius: 32px;
+            border-bottom-right-radius: 32px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(8px);
+            color: #34D399;
+            padding: 0.4rem 1rem;
+            border-radius: 99px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+        }
+
+        h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 1.25rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            background-color: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 1.125rem;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+            transition: all 0.2s ease;
+        }
+
+        .btn-download:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 4rem 1.5rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--radius);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
+            border: 1px solid #E7E5E4;
+        }
+
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        .instructions {
+            background: white;
+            border-radius: var(--radius);
+            padding: 2.5rem;
+            border: 1px solid #E7E5E4;
+        }
+
+        .instructions h2 {
+            font-size: 1.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step-num {
+            width: 36px;
+            height: 36px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            border-top: 1px solid #E7E5E4;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="badge">🚀 App Gratuita Local-First</div>
+        <h1>CuentasClaras</h1>
+        <p class="subtitle">El cuaderno digital para bodegas y comercios. Registra fiados y abonos en menos de 3 clics sin depender de internet.</p>
+        <a href="cuentas-claras.apk" class="btn-download">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Descargar APK Directo (Gratis)
+        </a>
+    </header>
+
+    <main class="container">
+        <section class="features">
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Registro en 3 Clics</h3>
+                <p>Diseñado para que registres fiados en segundos mientras atiendes a tus clientes. Simple, directo y rápido.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📴</div>
+                <h3>100% Offline (Sin Internet)</h3>
+                <p>Tus datos se guardan de forma segura en tu teléfono. No necesitas saldo ni datos para usar la aplicación.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">💵</div>
+                <h3>Multimoneda Flexible</h3>
+                <p>Registra en Dólares (USD), Bolívares (VES), Pesos (COP) o la moneda de tu país con calculadora integrada.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📲</div>
+                <h3>Cobro por WhatsApp</h3>
+                <p>Exporta estados de cuenta claros en PDF o texto y envíalos a tus clientes con un solo botón.</p>
+            </div>
+        </section>
+
+        <section class="instructions">
+            <h2>Cómo instalar CuentasClaras en tu Android</h2>
+            <div class="step">
+                <div class="step-num">1</div>
+                <div>
+                    <strong>Descarga el APK:</strong> Haz clic en el botón de descarga arriba para obtener el archivo de instalación.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">2</div>
+                <div>
+                    <strong>Permite la instalación:</strong> Si tu teléfono te pide permiso, selecciona "Permitir desde esta fuente" o habilita orígenes desconocidos.
+                </div>
+            </div>
+            <div class="step">
+                <div class="step-num">3</div>
+                <div>
+                    <strong>¡Listo para usar!</strong> Abre CuentasClaras y comienza a llevar el control de tu negocio sin registros ni cuentas requeridas.
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 CuentasClaras — Diseñado para el comercio local en Latinoamérica.</p>
+    </footer>
+</body>
+</html>
