@@ -7,7 +7,7 @@ import 'package:drift/drift.dart';
 class Products extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 100)();
-  RealColumn get defaultPrice => real()();
+  IntColumn get defaultPrice => integer()();
   TextColumn get currency => text().withLength(min: 3, max: 3)();
   BoolColumn get isActive => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

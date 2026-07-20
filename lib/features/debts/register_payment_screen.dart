@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
-import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/utils/currency_utils.dart';
@@ -238,7 +237,7 @@ class _RegisterPaymentScreenState
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _buildInfoColumn('Deuda total',
-                    CurrencyUtils.formatAmount(
+                    CurrencyUtils.formatCents(
                         summary.debt.amount, summary.debt.currency),
                     AppColors.textPrimary),
                 _buildInfoColumn('Pagado',
@@ -287,18 +286,14 @@ class _RegisterPaymentScreenState
         ),
         child: const Row(
           children: [
-            Icon(Icons.receipt_long, color: AppColors.primary),
-            SizedBox(width: 12),
-            Expanded(
-              child: Text(
-                'Seleccionar deuda a abonar',
-                style: TextStyle(
-                  color: AppColors.textSecondary,
-                  fontSize: 16,
-                ),
-              ),
+            Icon(Icons.search, color: AppColors.textSecondary),
+            SizedBox(width: AppTheme.spacingSm),
+            Text(
+              'Seleccionar deuda a abonar...',
+              style: TextStyle(color: AppColors.textSecondary),
             ),
-            Icon(Icons.chevron_right, color: AppColors.textTertiary),
+            Spacer(),
+            Icon(Icons.arrow_drop_down),
           ],
         ),
       ),
@@ -369,7 +364,7 @@ class _RegisterPaymentScreenState
                                 item.debt.description ?? 'Fiado',
                               ),
                               trailing: Text(
-                                CurrencyUtils.formatAmount(
+                                CurrencyUtils.formatCents(
                                   item.debt.amount,
                                   item.debt.currency,
                                 ),
@@ -395,7 +390,9 @@ class _RegisterPaymentScreenState
       final summary = await ref
           .read(debtsDaoProvider)
           .getDebtSummary(selected.debt.id);
-      setState(() => _selectedDebt = summary);
+      if (mounted) {
+        setState(() => _selectedDebt = summary);
+      }
     }
   }
 
@@ -403,17 +400,21 @@ class _RegisterPaymentScreenState
     if (_selectedDebt == null) return;
     if (!_formKey.currentState!.validate()) return;
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     setState(() => _isSubmitting = true);
 
     try {
-      final amount =
+      final amountDouble =
           double.parse(_amountController.text.replaceAll(',', '.'));
+      final amountCents = CurrencyUtils.amountToCents(amountDouble);
       final dao = ref.read(paymentsDaoProvider);
 
       final fullyPaid = await dao.insertPaymentAndCheck(
         PaymentsCompanion.insert(
           debtId: _selectedDebt!.debt.id,
-          amount: amount,
+          amount: amountCents,
           currency: _selectedDebt!.debt.currency,
           notes: drift.Value(
             _notesController.text.trim().isNotEmpty
@@ -428,28 +429,26 @@ class _RegisterPaymentScreenState
       ref.invalidate(pendingDebtsProvider);
       ref.invalidate(totalDebtByCurrencyProvider);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              fullyPaid
-                  ? '¡Deuda pagada completamente! 🎉'
-                  : 'Abono registrado exitosamente',
-            ),
-            backgroundColor: AppColors.success,
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            fullyPaid
+                ? '¡Deuda pagada completamente! 🎉'
+                : 'Abono registrado exitosamente',
           ),
-        );
-        context.pop();
-      }
+          backgroundColor: AppColors.success,
+        ),
+      );
+      navigator.pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }

@@ -97,7 +97,7 @@ class RecentActivityItem extends StatelessWidget {
 
               // Monto
               Text(
-                CurrencyUtils.formatAmount(debt.amount, debt.currency),
+                CurrencyUtils.formatCents(debt.amount, debt.currency),
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
                       color: debt.isPaid ? AppColors.success : AppColors.error,
                       fontWeight: FontWeight.w700,

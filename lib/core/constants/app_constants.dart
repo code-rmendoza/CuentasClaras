@@ -10,7 +10,7 @@ class AppConstants {
 
   // ── Database ──────────────────────────────────────────────
   static const String databaseName = 'cuentas_claras.db';
-  static const int databaseVersion = 1;
+  static const int databaseVersion = 2;
 
   // ── PIN ───────────────────────────────────────────────────
   static const String pinStorageKey = 'user_pin';

@@ -38,27 +38,30 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
   /// Registra un nuevo pago y verifica si la deuda queda saldada.
   ///
   /// Retorna `true` si la deuda quedó completamente pagada.
+  /// Registra un nuevo pago y verifica si la deuda queda saldada.
+  ///
+  /// Retorna `true` si la deuda quedó completamente pagada.
   Future<bool> insertPaymentAndCheck(PaymentsCompanion entry) {
     return transaction(() async {
       // Insertar el pago
       await into(payments).insert(entry);
 
-      // Calcular total pagado para esta deuda
+      // Calcular total pagado en centavos para esta deuda
       final debtId = entry.debtId.value;
       final totalPaidExpr = payments.amount.sum();
       final query = selectOnly(payments)
         ..addColumns([totalPaidExpr])
         ..where(payments.debtId.equals(debtId));
       final result = await query.getSingle();
-      final totalPaid = result.read(totalPaidExpr) ?? 0.0;
+      final totalPaidCents = result.read(totalPaidExpr) ?? 0;
 
-      // Obtener monto de la deuda
+      // Obtener monto de la deuda en centavos
       final debt = await (select(debts)
             ..where((t) => t.id.equals(debtId)))
           .getSingle();
 
-      // Marcar como pagada si el total de pagos >= monto de la deuda
-      if (totalPaid >= debt.amount) {
+      // Marcar como pagada si el total de abonos >= monto de la deuda (comparación entera exacta)
+      if (totalPaidCents >= debt.amount) {
         await (update(debts)..where((t) => t.id.equals(debtId))).write(
           DebtsCompanion(
             isPaid: const Value(true),
@@ -72,15 +75,21 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
     });
   }
 
-  /// Total pagado para una deuda específica.
-  Future<double> getTotalPaidForDebt(int debtId) async {
+  /// Total pagado en centavos para una deuda específica.
+  Future<int> getTotalPaidCentsForDebt(int debtId) async {
     final totalExpr = payments.amount.sum();
     final query = selectOnly(payments)
       ..addColumns([totalExpr])
       ..where(payments.debtId.equals(debtId));
 
     final result = await query.getSingle();
-    return result.read(totalExpr) ?? 0.0;
+    return result.read(totalExpr) ?? 0;
+  }
+
+  /// Total pagado para una deuda específica (en unidades monetarias).
+  Future<double> getTotalPaidForDebt(int debtId) async {
+    final totalCents = await getTotalPaidCentsForDebt(debtId);
+    return totalCents / 100.0;
   }
 
   /// Pagos recientes globales (para el dashboard).
@@ -111,13 +120,13 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
       // Eliminar el pago
       await (delete(payments)..where((t) => t.id.equals(paymentId))).go();
 
-      // Recalcular si la deuda sigue pagada
-      final totalPaid = await getTotalPaidForDebt(payment.debtId);
+      // Recalcular si la deuda sigue pagada usando centavos enteros
+      final totalPaidCents = await getTotalPaidCentsForDebt(payment.debtId);
       final debt = await (select(debts)
             ..where((t) => t.id.equals(payment.debtId)))
           .getSingle();
 
-      if (totalPaid < debt.amount && debt.isPaid) {
+      if (totalPaidCents < debt.amount && debt.isPaid) {
         await (update(debts)..where((t) => t.id.equals(payment.debtId))).write(
           DebtsCompanion(
             isPaid: const Value(false),

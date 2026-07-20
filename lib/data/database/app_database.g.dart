@@ -434,11 +434,11 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     'defaultPrice',
   );
   @override
-  late final GeneratedColumn<double> defaultPrice = GeneratedColumn<double>(
+  late final GeneratedColumn<int> defaultPrice = GeneratedColumn<int>(
     'default_price',
     aliasedName,
     false,
-    type: DriftSqlType.double,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _currencyMeta = const VerificationMeta(
@@ -564,7 +564,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         data['${effectivePrefix}name'],
       )!,
       defaultPrice: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
+        DriftSqlType.int,
         data['${effectivePrefix}default_price'],
       )!,
       currency: attachedDatabase.typeMapping.read(
@@ -591,7 +591,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
 class Product extends DataClass implements Insertable<Product> {
   final int id;
   final String name;
-  final double defaultPrice;
+  final int defaultPrice;
   final String currency;
   final bool isActive;
   final DateTime createdAt;
@@ -608,7 +608,7 @@ class Product extends DataClass implements Insertable<Product> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['default_price'] = Variable<double>(defaultPrice);
+    map['default_price'] = Variable<int>(defaultPrice);
     map['currency'] = Variable<String>(currency);
     map['is_active'] = Variable<bool>(isActive);
     map['created_at'] = Variable<DateTime>(createdAt);
@@ -634,7 +634,7 @@ class Product extends DataClass implements Insertable<Product> {
     return Product(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      defaultPrice: serializer.fromJson<double>(json['defaultPrice']),
+      defaultPrice: serializer.fromJson<int>(json['defaultPrice']),
       currency: serializer.fromJson<String>(json['currency']),
       isActive: serializer.fromJson<bool>(json['isActive']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -646,7 +646,7 @@ class Product extends DataClass implements Insertable<Product> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'defaultPrice': serializer.toJson<double>(defaultPrice),
+      'defaultPrice': serializer.toJson<int>(defaultPrice),
       'currency': serializer.toJson<String>(currency),
       'isActive': serializer.toJson<bool>(isActive),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -656,7 +656,7 @@ class Product extends DataClass implements Insertable<Product> {
   Product copyWith({
     int? id,
     String? name,
-    double? defaultPrice,
+    int? defaultPrice,
     String? currency,
     bool? isActive,
     DateTime? createdAt,
@@ -712,7 +712,7 @@ class Product extends DataClass implements Insertable<Product> {
 class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<int> id;
   final Value<String> name;
-  final Value<double> defaultPrice;
+  final Value<int> defaultPrice;
   final Value<String> currency;
   final Value<bool> isActive;
   final Value<DateTime> createdAt;
@@ -727,7 +727,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   ProductsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required double defaultPrice,
+    required int defaultPrice,
     required String currency,
     this.isActive = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -737,7 +737,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   static Insertable<Product> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<double>? defaultPrice,
+    Expression<int>? defaultPrice,
     Expression<String>? currency,
     Expression<bool>? isActive,
     Expression<DateTime>? createdAt,
@@ -755,7 +755,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   ProductsCompanion copyWith({
     Value<int>? id,
     Value<String>? name,
-    Value<double>? defaultPrice,
+    Value<int>? defaultPrice,
     Value<String>? currency,
     Value<bool>? isActive,
     Value<DateTime>? createdAt,
@@ -780,7 +780,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       map['name'] = Variable<String>(name.value);
     }
     if (defaultPrice.present) {
-      map['default_price'] = Variable<double>(defaultPrice.value);
+      map['default_price'] = Variable<int>(defaultPrice.value);
     }
     if (currency.present) {
       map['currency'] = Variable<String>(currency.value);
@@ -842,11 +842,11 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
   );
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
     'amount',
     aliasedName,
     false,
-    type: DriftSqlType.double,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _currencyMeta = const VerificationMeta(
@@ -1029,7 +1029,7 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
         data['${effectivePrefix}client_id'],
       )!,
       amount: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
+        DriftSqlType.int,
         data['${effectivePrefix}amount'],
       )!,
       currency: attachedDatabase.typeMapping.read(
@@ -1068,7 +1068,7 @@ class $DebtsTable extends Debts with TableInfo<$DebtsTable, Debt> {
 class Debt extends DataClass implements Insertable<Debt> {
   final int id;
   final int clientId;
-  final double amount;
+  final int amount;
   final String currency;
   final String? description;
   final int? productId;
@@ -1091,7 +1091,7 @@ class Debt extends DataClass implements Insertable<Debt> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['client_id'] = Variable<int>(clientId);
-    map['amount'] = Variable<double>(amount);
+    map['amount'] = Variable<int>(amount);
     map['currency'] = Variable<String>(currency);
     if (!nullToAbsent || description != null) {
       map['description'] = Variable<String>(description);
@@ -1131,7 +1131,7 @@ class Debt extends DataClass implements Insertable<Debt> {
     return Debt(
       id: serializer.fromJson<int>(json['id']),
       clientId: serializer.fromJson<int>(json['clientId']),
-      amount: serializer.fromJson<double>(json['amount']),
+      amount: serializer.fromJson<int>(json['amount']),
       currency: serializer.fromJson<String>(json['currency']),
       description: serializer.fromJson<String?>(json['description']),
       productId: serializer.fromJson<int?>(json['productId']),
@@ -1146,7 +1146,7 @@ class Debt extends DataClass implements Insertable<Debt> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'clientId': serializer.toJson<int>(clientId),
-      'amount': serializer.toJson<double>(amount),
+      'amount': serializer.toJson<int>(amount),
       'currency': serializer.toJson<String>(currency),
       'description': serializer.toJson<String?>(description),
       'productId': serializer.toJson<int?>(productId),
@@ -1159,7 +1159,7 @@ class Debt extends DataClass implements Insertable<Debt> {
   Debt copyWith({
     int? id,
     int? clientId,
-    double? amount,
+    int? amount,
     String? currency,
     Value<String?> description = const Value.absent(),
     Value<int?> productId = const Value.absent(),
@@ -1239,7 +1239,7 @@ class Debt extends DataClass implements Insertable<Debt> {
 class DebtsCompanion extends UpdateCompanion<Debt> {
   final Value<int> id;
   final Value<int> clientId;
-  final Value<double> amount;
+  final Value<int> amount;
   final Value<String> currency;
   final Value<String?> description;
   final Value<int?> productId;
@@ -1260,7 +1260,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
   DebtsCompanion.insert({
     this.id = const Value.absent(),
     required int clientId,
-    required double amount,
+    required int amount,
     required String currency,
     this.description = const Value.absent(),
     this.productId = const Value.absent(),
@@ -1273,7 +1273,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
   static Insertable<Debt> custom({
     Expression<int>? id,
     Expression<int>? clientId,
-    Expression<double>? amount,
+    Expression<int>? amount,
     Expression<String>? currency,
     Expression<String>? description,
     Expression<int>? productId,
@@ -1297,7 +1297,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
   DebtsCompanion copyWith({
     Value<int>? id,
     Value<int>? clientId,
-    Value<double>? amount,
+    Value<int>? amount,
     Value<String>? currency,
     Value<String?>? description,
     Value<int?>? productId,
@@ -1328,7 +1328,7 @@ class DebtsCompanion extends UpdateCompanion<Debt> {
       map['client_id'] = Variable<int>(clientId.value);
     }
     if (amount.present) {
-      map['amount'] = Variable<double>(amount.value);
+      map['amount'] = Variable<int>(amount.value);
     }
     if (currency.present) {
       map['currency'] = Variable<String>(currency.value);
@@ -1400,11 +1400,11 @@ class $PaymentsTable extends Payments with TableInfo<$PaymentsTable, Payment> {
   );
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
+  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
     'amount',
     aliasedName,
     false,
-    type: DriftSqlType.double,
+    type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
   static const VerificationMeta _currencyMeta = const VerificationMeta(
@@ -1522,7 +1522,7 @@ class $PaymentsTable extends Payments with TableInfo<$PaymentsTable, Payment> {
         data['${effectivePrefix}debt_id'],
       )!,
       amount: attachedDatabase.typeMapping.read(
-        DriftSqlType.double,
+        DriftSqlType.int,
         data['${effectivePrefix}amount'],
       )!,
       currency: attachedDatabase.typeMapping.read(
@@ -1549,7 +1549,7 @@ class $PaymentsTable extends Payments with TableInfo<$PaymentsTable, Payment> {
 class Payment extends DataClass implements Insertable<Payment> {
   final int id;
   final int debtId;
-  final double amount;
+  final int amount;
   final String currency;
   final String? notes;
   final DateTime createdAt;
@@ -1566,7 +1566,7 @@ class Payment extends DataClass implements Insertable<Payment> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['debt_id'] = Variable<int>(debtId);
-    map['amount'] = Variable<double>(amount);
+    map['amount'] = Variable<int>(amount);
     map['currency'] = Variable<String>(currency);
     if (!nullToAbsent || notes != null) {
       map['notes'] = Variable<String>(notes);
@@ -1596,7 +1596,7 @@ class Payment extends DataClass implements Insertable<Payment> {
     return Payment(
       id: serializer.fromJson<int>(json['id']),
       debtId: serializer.fromJson<int>(json['debtId']),
-      amount: serializer.fromJson<double>(json['amount']),
+      amount: serializer.fromJson<int>(json['amount']),
       currency: serializer.fromJson<String>(json['currency']),
       notes: serializer.fromJson<String?>(json['notes']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
@@ -1608,7 +1608,7 @@ class Payment extends DataClass implements Insertable<Payment> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'debtId': serializer.toJson<int>(debtId),
-      'amount': serializer.toJson<double>(amount),
+      'amount': serializer.toJson<int>(amount),
       'currency': serializer.toJson<String>(currency),
       'notes': serializer.toJson<String?>(notes),
       'createdAt': serializer.toJson<DateTime>(createdAt),
@@ -1618,7 +1618,7 @@ class Payment extends DataClass implements Insertable<Payment> {
   Payment copyWith({
     int? id,
     int? debtId,
-    double? amount,
+    int? amount,
     String? currency,
     Value<String?> notes = const Value.absent(),
     DateTime? createdAt,
@@ -1672,7 +1672,7 @@ class Payment extends DataClass implements Insertable<Payment> {
 class PaymentsCompanion extends UpdateCompanion<Payment> {
   final Value<int> id;
   final Value<int> debtId;
-  final Value<double> amount;
+  final Value<int> amount;
   final Value<String> currency;
   final Value<String?> notes;
   final Value<DateTime> createdAt;
@@ -1687,7 +1687,7 @@ class PaymentsCompanion extends UpdateCompanion<Payment> {
   PaymentsCompanion.insert({
     this.id = const Value.absent(),
     required int debtId,
-    required double amount,
+    required int amount,
     required String currency,
     this.notes = const Value.absent(),
     this.createdAt = const Value.absent(),
@@ -1697,7 +1697,7 @@ class PaymentsCompanion extends UpdateCompanion<Payment> {
   static Insertable<Payment> custom({
     Expression<int>? id,
     Expression<int>? debtId,
-    Expression<double>? amount,
+    Expression<int>? amount,
     Expression<String>? currency,
     Expression<String>? notes,
     Expression<DateTime>? createdAt,
@@ -1715,7 +1715,7 @@ class PaymentsCompanion extends UpdateCompanion<Payment> {
   PaymentsCompanion copyWith({
     Value<int>? id,
     Value<int>? debtId,
-    Value<double>? amount,
+    Value<int>? amount,
     Value<String>? currency,
     Value<String?>? notes,
     Value<DateTime>? createdAt,
@@ -1740,7 +1740,7 @@ class PaymentsCompanion extends UpdateCompanion<Payment> {
       map['debt_id'] = Variable<int>(debtId.value);
     }
     if (amount.present) {
-      map['amount'] = Variable<double>(amount.value);
+      map['amount'] = Variable<int>(amount.value);
     }
     if (currency.present) {
       map['currency'] = Variable<String>(currency.value);
@@ -2140,6 +2140,18 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $DebtsTable debts = $DebtsTable(this);
   late final $PaymentsTable payments = $PaymentsTable(this);
   late final $ExchangeRatesTable exchangeRates = $ExchangeRatesTable(this);
+  late final Index debtsClientIdx = Index(
+    'debts_client_idx',
+    'CREATE INDEX debts_client_idx ON debts (client_id)',
+  );
+  late final Index debtsIsPaidIdx = Index(
+    'debts_is_paid_idx',
+    'CREATE INDEX debts_is_paid_idx ON debts (is_paid)',
+  );
+  late final Index paymentsDebtIdx = Index(
+    'payments_debt_idx',
+    'CREATE INDEX payments_debt_idx ON payments (debt_id)',
+  );
   late final ClientsDao clientsDao = ClientsDao(this as AppDatabase);
   late final DebtsDao debtsDao = DebtsDao(this as AppDatabase);
   late final PaymentsDao paymentsDao = PaymentsDao(this as AppDatabase);
@@ -2154,6 +2166,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     debts,
     payments,
     exchangeRates,
+    debtsClientIdx,
+    debtsIsPaidIdx,
+    paymentsDebtIdx,
   ];
 }
 
@@ -2469,7 +2484,7 @@ typedef $$ProductsTableCreateCompanionBuilder =
     ProductsCompanion Function({
       Value<int> id,
       required String name,
-      required double defaultPrice,
+      required int defaultPrice,
       required String currency,
       Value<bool> isActive,
       Value<DateTime> createdAt,
@@ -2478,7 +2493,7 @@ typedef $$ProductsTableUpdateCompanionBuilder =
     ProductsCompanion Function({
       Value<int> id,
       Value<String> name,
-      Value<double> defaultPrice,
+      Value<int> defaultPrice,
       Value<String> currency,
       Value<bool> isActive,
       Value<DateTime> createdAt,
@@ -2527,7 +2542,7 @@ class $$ProductsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get defaultPrice => $composableBuilder(
+  ColumnFilters<int> get defaultPrice => $composableBuilder(
     column: $table.defaultPrice,
     builder: (column) => ColumnFilters(column),
   );
@@ -2592,7 +2607,7 @@ class $$ProductsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get defaultPrice => $composableBuilder(
+  ColumnOrderings<int> get defaultPrice => $composableBuilder(
     column: $table.defaultPrice,
     builder: (column) => ColumnOrderings(column),
   );
@@ -2628,7 +2643,7 @@ class $$ProductsTableAnnotationComposer
   GeneratedColumn<String> get name =>
       $composableBuilder(column: $table.name, builder: (column) => column);
 
-  GeneratedColumn<double> get defaultPrice => $composableBuilder(
+  GeneratedColumn<int> get defaultPrice => $composableBuilder(
     column: $table.defaultPrice,
     builder: (column) => column,
   );
@@ -2698,7 +2713,7 @@ class $$ProductsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<String> name = const Value.absent(),
-                Value<double> defaultPrice = const Value.absent(),
+                Value<int> defaultPrice = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -2714,7 +2729,7 @@ class $$ProductsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required String name,
-                required double defaultPrice,
+                required int defaultPrice,
                 required String currency,
                 Value<bool> isActive = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -2778,7 +2793,7 @@ typedef $$DebtsTableCreateCompanionBuilder =
     DebtsCompanion Function({
       Value<int> id,
       required int clientId,
-      required double amount,
+      required int amount,
       required String currency,
       Value<String?> description,
       Value<int?> productId,
@@ -2790,7 +2805,7 @@ typedef $$DebtsTableUpdateCompanionBuilder =
     DebtsCompanion Function({
       Value<int> id,
       Value<int> clientId,
-      Value<double> amount,
+      Value<int> amount,
       Value<String> currency,
       Value<String?> description,
       Value<int?> productId,
@@ -2870,7 +2885,7 @@ class $$DebtsTableFilterComposer extends Composer<_$AppDatabase, $DebtsTable> {
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get amount => $composableBuilder(
+  ColumnFilters<int> get amount => $composableBuilder(
     column: $table.amount,
     builder: (column) => ColumnFilters(column),
   );
@@ -2986,7 +3001,7 @@ class $$DebtsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get amount => $composableBuilder(
+  ColumnOrderings<int> get amount => $composableBuilder(
     column: $table.amount,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3075,7 +3090,7 @@ class $$DebtsTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<double> get amount =>
+  GeneratedColumn<int> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
 
   GeneratedColumn<String> get currency =>
@@ -3201,7 +3216,7 @@ class $$DebtsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> clientId = const Value.absent(),
-                Value<double> amount = const Value.absent(),
+                Value<int> amount = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<String?> description = const Value.absent(),
                 Value<int?> productId = const Value.absent(),
@@ -3223,7 +3238,7 @@ class $$DebtsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required int clientId,
-                required double amount,
+                required int amount,
                 required String currency,
                 Value<String?> description = const Value.absent(),
                 Value<int?> productId = const Value.absent(),
@@ -3342,7 +3357,7 @@ typedef $$PaymentsTableCreateCompanionBuilder =
     PaymentsCompanion Function({
       Value<int> id,
       required int debtId,
-      required double amount,
+      required int amount,
       required String currency,
       Value<String?> notes,
       Value<DateTime> createdAt,
@@ -3351,7 +3366,7 @@ typedef $$PaymentsTableUpdateCompanionBuilder =
     PaymentsCompanion Function({
       Value<int> id,
       Value<int> debtId,
-      Value<double> amount,
+      Value<int> amount,
       Value<String> currency,
       Value<String?> notes,
       Value<DateTime> createdAt,
@@ -3394,7 +3409,7 @@ class $$PaymentsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<double> get amount => $composableBuilder(
+  ColumnFilters<int> get amount => $composableBuilder(
     column: $table.amount,
     builder: (column) => ColumnFilters(column),
   );
@@ -3452,7 +3467,7 @@ class $$PaymentsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<double> get amount => $composableBuilder(
+  ColumnOrderings<int> get amount => $composableBuilder(
     column: $table.amount,
     builder: (column) => ColumnOrderings(column),
   );
@@ -3508,7 +3523,7 @@ class $$PaymentsTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<double> get amount =>
+  GeneratedColumn<int> get amount =>
       $composableBuilder(column: $table.amount, builder: (column) => column);
 
   GeneratedColumn<String> get currency =>
@@ -3574,7 +3589,7 @@ class $$PaymentsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 Value<int> debtId = const Value.absent(),
-                Value<double> amount = const Value.absent(),
+                Value<int> amount = const Value.absent(),
                 Value<String> currency = const Value.absent(),
                 Value<String?> notes = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
@@ -3590,7 +3605,7 @@ class $$PaymentsTableTableManager
               ({
                 Value<int> id = const Value.absent(),
                 required int debtId,
-                required double amount,
+                required int amount,
                 required String currency,
                 Value<String?> notes = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),

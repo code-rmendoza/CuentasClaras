@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:crypto/crypto.dart';
+import 'package:uuid/uuid.dart';
 import '../../core/constants/app_constants.dart';
 
 /// Estado de configuración de la app.
@@ -66,21 +69,43 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     state = state.copyWith(themeMode: mode);
   }
 
-  /// Verifica el PIN ingresado contra el almacenado.
-  Future<bool> verifyPin(String pin) async {
-    final storedPin = await _storage.read(key: AppConstants.pinStorageKey);
-    return storedPin == pin;
+  /// Obtiene o genera una sal única de instalación para derivación de claves.
+  Future<String> _getOrCreateSalt() async {
+    var salt = await _storage.read(key: 'user_pin_salt');
+    if (salt == null || salt.isEmpty) {
+      salt = const Uuid().v4();
+      await _storage.write(key: 'user_pin_salt', value: salt);
+    }
+    return salt;
   }
 
-  /// Guarda un nuevo PIN.
+  /// Deriva el hash SHA-256 del PIN concatenado con la sal.
+  String _hashPin(String pin, String salt) {
+    final bytes = utf8.encode('$pin:$salt');
+    return sha256.convert(bytes).toString();
+  }
+
+  /// Verifica el PIN ingresado contra el digest almacenado usando la sal.
+  Future<bool> verifyPin(String pin) async {
+    final storedHash = await _storage.read(key: AppConstants.pinStorageKey);
+    if (storedHash == null) return false;
+    final salt = await _getOrCreateSalt();
+    final computedHash = _hashPin(pin, salt);
+    return storedHash == computedHash;
+  }
+
+  /// Guarda un nuevo PIN almacenando únicamente el digest hash salteado.
   Future<void> setPin(String pin) async {
-    await _storage.write(key: AppConstants.pinStorageKey, value: pin);
+    final salt = await _getOrCreateSalt();
+    final hash = _hashPin(pin, salt);
+    await _storage.write(key: AppConstants.pinStorageKey, value: hash);
     await setPinEnabled(true);
   }
 
-  /// Elimina el PIN.
+  /// Elimina el PIN y su sal asociada.
   Future<void> removePin() async {
     await _storage.delete(key: AppConstants.pinStorageKey);
+    await _storage.delete(key: 'user_pin_salt');
     await setPinEnabled(false);
   }
 

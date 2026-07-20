@@ -6,10 +6,12 @@ import 'products_table.dart';
 ///
 /// Cada deuda registra un crédito otorgado por el comerciante
 /// a un cliente. Puede estar vinculada opcionalmente a un producto.
+@TableIndex(name: 'debts_client_idx', columns: {#clientId})
+@TableIndex(name: 'debts_is_paid_idx', columns: {#isPaid})
 class Debts extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get clientId => integer().references(Clients, #id)();
-  RealColumn get amount => real()();
+  IntColumn get amount => integer()();
   TextColumn get currency => text().withLength(min: 3, max: 3)();
   TextColumn get description => text().nullable().withLength(max: 200)();
   IntColumn get productId => integer().nullable().references(Products, #id)();

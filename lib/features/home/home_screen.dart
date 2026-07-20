@@ -65,7 +65,7 @@ class HomeScreen extends ConsumerWidget {
                         totalByCurrency.when(
                           data: (totals) => _buildTotalSummary(context, totals),
                           loading: () => const SizedBox.shrink(),
-                          error: (_, __) => const SizedBox.shrink(),
+                          error: (_, _) => const SizedBox.shrink(),
                         ),
                       ],
                     ),

@@ -108,7 +108,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
         ...debts.map((d) => [
               d.client.name,
               d.client.phone ?? '',
-              d.debt.amount,
+              CurrencyUtils.centsToAmount(d.debt.amount),
               d.debt.currency,
               d.debt.description ?? '',
               app_date.DateUtils.formatShort(d.debt.createdAt),
@@ -131,23 +131,21 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
         text: 'CuentasClaras - Reporte de deudas',
       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('CSV exportado exitosamente'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('CSV exportado exitosamente'),
+          backgroundColor: AppColors.success,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isExporting = false);
     }
@@ -178,7 +176,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
         'pendingDebts': debts
             .map((d) => {
                   'clientName': d.client.name,
-                  'amount': d.debt.amount,
+                  'amount': CurrencyUtils.centsToAmount(d.debt.amount),
                   'currency': d.debt.currency,
                   'description': d.debt.description,
                   'createdAt': d.debt.createdAt.toIso8601String(),
@@ -200,23 +198,21 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
         text: 'CuentasClaras - Respaldo de datos',
       );
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Respaldo JSON exportado'),
-            backgroundColor: AppColors.success,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Respaldo JSON exportado'),
+          backgroundColor: AppColors.success,
+        ),
+      );
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isExporting = false);
     }
@@ -229,11 +225,10 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
       final debts = await ref.read(debtsDaoProvider).getPendingDebts();
 
       if (debts.isEmpty) {
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('No hay deudas pendientes')),
-          );
-        }
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No hay deudas pendientes')),
+        );
         return;
       }
 
@@ -253,7 +248,7 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
         buffer.writeln('👤 *${entry.key}*');
         for (final d in entry.value) {
           buffer.writeln(
-            '  • ${CurrencyUtils.formatAmount(d.debt.amount, d.debt.currency)}'
+            '  • ${CurrencyUtils.formatCents(d.debt.amount, d.debt.currency)}'
             '${d.debt.description != null ? " - ${d.debt.description}" : ""}',
           );
         }
@@ -264,14 +259,13 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
 
       await Share.share(buffer.toString());
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     } finally {
       if (mounted) setState(() => _isExporting = false);
     }

@@ -55,3 +55,15 @@ final totalDebtByCurrencyProvider = FutureProvider<Map<String, double>>((ref) {
 final activeProductsProvider = StreamProvider<List<Product>>((ref) {
   return ref.watch(productsDaoProvider).watchActiveProducts();
 });
+
+/// Provider para obtener un cliente por su ID.
+final clientByIdProvider =
+    FutureProvider.family<Client?, int>((ref, clientId) {
+  return ref.watch(clientsDaoProvider).getClientById(clientId);
+});
+
+/// Stream reactivo de deudas de un cliente específico.
+final debtsByClientProvider =
+    StreamProvider.family<List<Debt>, int>((ref, clientId) {
+  return ref.watch(debtsDaoProvider).watchDebtsByClient(clientId);
+});

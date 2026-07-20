@@ -3,6 +3,13 @@ import 'package:cuentas_claras/core/utils/currency_utils.dart';
 
 void main() {
   group('CurrencyUtils Tests', () {
+    test('amountToCents and centsToAmount convert accurately', () {
+      expect(CurrencyUtils.amountToCents(10.50), equals(1050));
+      expect(CurrencyUtils.centsToAmount(1050), equals(10.50));
+      expect(CurrencyUtils.amountToCents(0.01), equals(1));
+      expect(CurrencyUtils.centsToAmount(1), equals(0.01));
+    });
+
     test('formatAmount formats currency correctly with Spanish locale', () {
       final formattedUsd = CurrencyUtils.formatAmount(1500.50, 'USD');
       expect(formattedUsd, contains('\$'));

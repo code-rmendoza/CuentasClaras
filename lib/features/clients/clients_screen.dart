@@ -222,13 +222,12 @@ class _ClientsScreenState extends ConsumerState<ClientsScreen> {
       // Invalidar para refrescar
       ref.invalidate(allClientsProvider);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${nameController.text.trim()} agregado'),
-          ),
-        );
-      }
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${nameController.text.trim()} agregado'),
+        ),
+      );
     }
 
     nameController.dispose();

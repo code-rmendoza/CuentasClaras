@@ -71,7 +71,15 @@ class AppRouter {
         path: clientDetail,
         name: 'clientDetail',
         builder: (context, state) {
-          final id = int.parse(state.pathParameters['id']!);
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Error')),
+              body: const Center(
+                child: Text('Cliente no encontrado o ID inválido'),
+              ),
+            );
+          }
           return ClientDetailScreen(clientId: id);
         },
       ),

@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/currency_utils.dart';
 import '../../shared/providers/database_provider.dart';
 import '../../shared/widgets/empty_state.dart';
 import '../../shared/widgets/loading_indicator.dart';
@@ -163,11 +164,12 @@ class ProductsScreen extends ConsumerWidget {
     );
 
     if (result == true) {
+      final priceDouble =
+          double.parse(priceController.text.replaceAll(',', '.'));
       await ref.read(productsDaoProvider).insertProduct(
             ProductsCompanion.insert(
               name: nameController.text.trim(),
-              defaultPrice:
-                  double.parse(priceController.text.replaceAll(',', '.')),
+              defaultPrice: CurrencyUtils.amountToCents(priceDouble),
               currency: currency,
             ),
           );
@@ -221,7 +223,7 @@ class _ProductCard extends StatelessWidget {
         title: Text(product.name,
             style: const TextStyle(fontWeight: FontWeight.w600)),
         subtitle: Text(
-          '${AppConstants.currencySymbols[product.currency]} ${product.defaultPrice.toStringAsFixed(2)} ${product.currency}',
+          CurrencyUtils.formatCents(product.defaultPrice, product.currency),
         ),
         trailing: IconButton(
           icon: const Icon(Icons.delete_outline, color: AppColors.error),

@@ -19,21 +19,15 @@ class ClientDetailScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final clientFuture = ref.watch(
-      FutureProvider((ref) =>
-          ref.watch(clientsDaoProvider).getClientById(clientId)),
-    );
-    final debtsStream = ref.watch(
-      StreamProvider((ref) =>
-          ref.watch(debtsDaoProvider).watchDebtsByClient(clientId)),
-    );
+    final clientFuture = ref.watch(clientByIdProvider(clientId));
+    final debtsStream = ref.watch(debtsByClientProvider(clientId));
 
     return Scaffold(
       appBar: AppBar(
         title: clientFuture.when(
           data: (client) => Text(client?.name ?? 'Cliente'),
           loading: () => const Text('Cargando...'),
-          error: (_, __) => const Text('Error'),
+          error: (_, _) => const Text('Error'),
         ),
         actions: [
           IconButton(
@@ -238,7 +232,7 @@ class _DebtCard extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   Text(
-                    CurrencyUtils.formatAmount(debt.amount, debt.currency),
+                    CurrencyUtils.formatCents(debt.amount, debt.currency),
                     style: TextStyle(
                       fontWeight: FontWeight.w700,
                       fontSize: 16,

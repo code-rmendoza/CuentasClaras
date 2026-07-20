@@ -5,6 +5,26 @@ import '../constants/app_constants.dart';
 class CurrencyUtils {
   CurrencyUtils._();
 
+  /// Convierte un monto decimal a su representación exacta en centavos enteros.
+  static int amountToCents(double amount) {
+    return (amount * 100).round();
+  }
+
+  /// Convierte un valor de centavos enteros a su monto decimal.
+  static double centsToAmount(int cents) {
+    return cents / 100.0;
+  }
+
+  /// Formatea un monto expresado en centavos enteros.
+  static String formatCents(int cents, String currency) {
+    return formatAmount(centsToAmount(cents), currency);
+  }
+
+  /// Formatea en modo compacto un monto expresado en centavos enteros.
+  static String formatCompactCents(int cents, String currency) {
+    return formatCompact(centsToAmount(cents), currency);
+  }
+
   /// Formatea un monto con el símbolo de la moneda.
   ///
   /// Ejemplo: `formatAmount(1500.50, 'USD')` → `$1,500.50`

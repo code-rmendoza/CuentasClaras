@@ -39,10 +39,12 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
+# Android build artifacts, APKs and Key Stores
 /android/app/debug
 /android/app/profile
 /android/app/release
+*.apk
+key.properties
+*.keystore
+*.jks
 
-# Keep APK in landing for GitHub Pages download
-!landing/cuentas-claras.apk

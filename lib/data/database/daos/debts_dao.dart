@@ -14,20 +14,22 @@ class DebtWithClient {
   DebtWithClient({required this.debt, required this.client});
 }
 
-/// Resumen de deuda con pagos acumulados.
+/// Resumen de deuda con pagos acumulados en centavos.
 class DebtSummary {
   final Debt debt;
   final Client client;
-  final double totalPaid;
+  final int totalPaidCents;
 
   DebtSummary({
     required this.debt,
     required this.client,
-    required this.totalPaid,
+    required this.totalPaidCents,
   });
 
-  double get remainingAmount => debt.amount - totalPaid;
-  bool get isFullyPaid => remainingAmount <= 0;
+  int get remainingCents => debt.amount - totalPaidCents;
+  double get remainingAmount => remainingCents / 100.0;
+  double get totalPaid => totalPaidCents / 100.0;
+  bool get isFullyPaid => remainingCents <= 0;
 }
 
 /// DAO para operaciones CRUD de deudas (fiados).
@@ -95,18 +97,18 @@ class DebtsDao extends DatabaseAccessor<AppDatabase> with _$DebtsDaoMixin {
           ..where((t) => t.id.equals(debt.clientId)))
         .getSingle();
 
-    // Calcular total pagado
+    // Calcular total pagado en centavos
     final totalPaidExpr = payments.amount.sum();
     final paidQuery = selectOnly(payments)
       ..addColumns([totalPaidExpr])
       ..where(payments.debtId.equals(debtId));
     final paidResult = await paidQuery.getSingle();
-    final totalPaid = paidResult.read(totalPaidExpr) ?? 0.0;
+    final totalPaidCents = paidResult.read(totalPaidExpr) ?? 0;
 
     return DebtSummary(
       debt: debt,
       client: client,
-      totalPaid: totalPaid,
+      totalPaidCents: totalPaidCents,
     );
   }
 
@@ -144,8 +146,8 @@ class DebtsDao extends DatabaseAccessor<AppDatabase> with _$DebtsDaoMixin {
     final totals = <String, double>{};
     for (final row in results) {
       final currency = row.read(debts.currency)!;
-      final total = row.read(debts.amount.sum()) ?? 0.0;
-      totals[currency] = total;
+      final totalCents = row.read(debts.amount.sum()) ?? 0;
+      totals[currency] = totalCents / 100.0;
     }
     return totals;
   }
@@ -160,7 +162,8 @@ class DebtsDao extends DatabaseAccessor<AppDatabase> with _$DebtsDaoMixin {
           debts.currency.equals(currency));
 
     final result = await query.getSingle();
-    return result.read(totalExpr) ?? 0.0;
+    final totalCents = result.read(totalExpr) ?? 0;
+    return totalCents / 100.0;
   }
 
   /// Actividad reciente (últimas N deudas).

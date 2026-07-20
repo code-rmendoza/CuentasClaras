@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:drift/drift.dart' as drift;
-import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/utils/currency_utils.dart';
 import '../../core/utils/validators.dart';
 import '../../shared/providers/database_provider.dart';
 import '../../shared/providers/settings_provider.dart';
@@ -39,6 +39,7 @@ class _RegisterDebtScreenState extends ConsumerState<RegisterDebtScreen> {
   @override
   void initState() {
     super.initState();
+    _selectedCurrency = ref.read(settingsProvider).defaultCurrency;
     if (widget.preselectedClientId != null) {
       _loadPreselectedClient();
     }
@@ -62,9 +63,6 @@ class _RegisterDebtScreenState extends ConsumerState<RegisterDebtScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final settings = ref.watch(settingsProvider);
-    _selectedCurrency = settings.defaultCurrency;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Registrar Fiado'),
@@ -342,17 +340,21 @@ class _RegisterDebtScreenState extends ConsumerState<RegisterDebtScreen> {
 
     if (!_formKey.currentState!.validate()) return;
 
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     setState(() => _isSubmitting = true);
 
     try {
-      final amount =
+      final amountDouble =
           double.parse(_amountController.text.replaceAll(',', '.'));
+      final amountCents = CurrencyUtils.amountToCents(amountDouble);
       final dao = ref.read(debtsDaoProvider);
 
       await dao.insertDebt(
         DebtsCompanion.insert(
           clientId: _selectedClient!.id,
-          amount: amount,
+          amount: amountCents,
           currency: _selectedCurrency,
           description: drift.Value(
             _descriptionController.text.trim().isNotEmpty
@@ -369,26 +371,24 @@ class _RegisterDebtScreenState extends ConsumerState<RegisterDebtScreen> {
       ref.invalidate(pendingDebtsProvider);
       ref.invalidate(totalDebtByCurrencyProvider);
 
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Fiado de ${_amountController.text} $_selectedCurrency registrado',
-            ),
-            backgroundColor: AppColors.success,
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            'Fiado de ${_amountController.text} $_selectedCurrency registrado',
           ),
-        );
-        context.pop();
-      }
+          backgroundColor: AppColors.success,
+        ),
+      );
+      navigator.pop();
     } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppColors.error,
-          ),
-        );
-      }
+      if (!mounted) return;
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     } finally {
       if (mounted) {
         setState(() => _isSubmitting = false);

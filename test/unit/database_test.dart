@@ -35,11 +35,11 @@ void main() {
         ClientsCompanion.insert(name: 'Carlos Perez'),
       );
 
-      // 2. Insert debt of 100 USD
+      // 2. Insert debt of 100 USD (10000 cents)
       final debtId = await database.debtsDao.insertDebt(
         DebtsCompanion.insert(
           clientId: clientId,
-          amount: 100.0,
+          amount: 10000,
           currency: 'USD',
           description: const drift.Value('Harina y arroz'),
         ),
@@ -49,21 +49,21 @@ void main() {
       expect(pending.length, equals(1));
       expect(pending.first.debt.isPaid, isFalse);
 
-      // 3. Insert partial payment of 40 USD
+      // 3. Insert partial payment of 40 USD (4000 cents)
       final isPaid1 = await database.paymentsDao.insertPaymentAndCheck(
         PaymentsCompanion.insert(
           debtId: debtId,
-          amount: 40.0,
+          amount: 4000,
           currency: 'USD',
         ),
       );
       expect(isPaid1, isFalse);
 
-      // 4. Insert remaining payment of 60 USD
+      // 4. Insert remaining payment of 60 USD (6000 cents)
       final isPaid2 = await database.paymentsDao.insertPaymentAndCheck(
         PaymentsCompanion.insert(
           debtId: debtId,
-          amount: 60.0,
+          amount: 6000,
           currency: 'USD',
         ),
       );
