@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "711964914078",
+    "project_id": "cuentasclaras-3e740",
+    "storage_bucket": "cuentasclaras-3e740.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711964914078:android:5a21b16150271961c3668f",
+        "android_client_info": {
+          "package_name": "com.cuentasclaras.cuentas_claras"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5fFfh2eMp3x8I_6D4gYEIpHv8ASYpWmk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
