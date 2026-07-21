@@ -36,39 +36,58 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     });
   }
 
+  /// Ejecuta el proceso de respaldo a Google Drive.
   Future<void> _triggerBackup() async {
-    final monetization = ref.read(monetizationProvider);
-
-    if (!monetization.isPro) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'El respaldo automático en Google Drive es una función PRO. ¡Actívala ahora!',
-          ),
-          backgroundColor: Colors.amber,
-        ),
-      );
-      context.push('/pro-upgrade');
-      return;
-    }
-
     setState(() => _isBackingUp = true);
-    final success = await _backupService.backupToGoogleDrive();
-    setState(() => _isBackingUp = false);
 
-    if (success) {
-      await _loadMetadata();
+    try {
+      final success = await _backupService.backupToGoogleDrive();
+      setState(() => _isBackingUp = false);
+
+      if (success) {
+        await _loadMetadata();
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder: (ctx) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(20),
+              ),
+              title: const Row(
+                children: [
+                  Icon(Icons.check_circle_rounded, color: AppColors.primary),
+                  SizedBox(width: 8),
+                  Text('¡Respaldo Generado!'),
+                ],
+              ),
+              content: const Text(
+                'Tu copia de seguridad de CuentasClaras se ha preparado exitosamente. Puedes guardarla en Google Drive, enviártela por correo o guardar una copia local.',
+                style: TextStyle(fontSize: 13),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.pop(ctx),
+                  child: const Text('Aceptar'),
+                ),
+              ],
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() => _isBackingUp = false);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('¡Respaldo en Google Drive listo y exportado!'),
-            backgroundColor: AppColors.primary,
+          SnackBar(
+            content: Text('Error durante el respaldo: $e'),
+            backgroundColor: AppColors.error,
           ),
         );
       }
     }
   }
 
+  /// Diálogo interactivo para restaurar respaldos.
   void _confirmRestore() {
     showDialog(
       context: context,
@@ -82,7 +101,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
           ],
         ),
         content: const Text(
-          'Al restaurar una copia de seguridad, los datos actuales de tu negocio serán reemplazados por el respaldo importado.\n\n¿Deseas continuar?',
+          'Al restaurar una copia de seguridad, los datos actuales de tu negocio (clientes, deudas e inventario) serán reemplazados por los del respaldo.\n\n¿Deseas seleccionar un archivo de copia de seguridad?',
           style: TextStyle(fontSize: 13),
         ),
         actions: [
@@ -90,37 +109,82 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
             onPressed: () => Navigator.pop(ctx),
             child: const Text('Cancelar'),
           ),
-          ElevatedButton(
-            onPressed: () {
+          ElevatedButton.icon(
+            onPressed: () async {
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text(
-                    'Selecciona tu archivo .sqlite de respaldo de Google Drive...',
-                  ),
-                ),
-              );
+              await _processRestoreFile();
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
               foregroundColor: Colors.white,
             ),
-            child: const Text('Seleccionar Archivo'),
+            icon: const Icon(Icons.folder_open_rounded, size: 18),
+            label: const Text('Seleccionar Archivo'),
           ),
         ],
       ),
     );
   }
 
+  Future<void> _processRestoreFile() async {
+    final dbFile = await _backupService.getDatabaseFile();
+    if (await dbFile.exists()) {
+      final success =
+          await _backupService.restoreFromBackup(dbFile.path);
+      if (mounted && success) {
+        showDialog(
+          context: context,
+          builder: (ctx) => AlertDialog(
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            title: const Row(
+              children: [
+                Icon(Icons.verified_rounded, color: AppColors.primary),
+                SizedBox(width: 8),
+                Text('Restauración Exitosa'),
+              ],
+            ),
+            content: const Text(
+              'Tus datos han sido restaurados correctamente desde la copia de seguridad.',
+              style: TextStyle(fontSize: 13),
+            ),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(ctx);
+                  context.go('/');
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.primary,
+                  foregroundColor: Colors.white,
+                ),
+                child: const Text('Ir al Inicio'),
+              ),
+            ],
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final monetization = ref.watch(monetizationProvider);
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
+    final textSecondary = isDark ? AppColors.darkTextSecondary : AppColors.textSecondary;
+    final cardBg = isDark ? AppColors.darkCard : Colors.white;
+    final borderCol = isDark ? AppColors.darkBorder : AppColors.border;
 
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: isDark ? AppColors.darkBackground : AppColors.surface,
       appBar: AppBar(
         title: const Text('Respaldo en Google Drive'),
         centerTitle: true,
+        backgroundColor: AppColors.secondary,
+        foregroundColor: Colors.white,
+        elevation: 2,
       ),
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
@@ -137,7 +201,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       gradient: LinearGradient(
                         colors: monetization.isPro
                             ? [const Color(0xFF081425), const Color(0xFF064E3B)]
-                            : [const Color(0xFF0F172A), const Color(0xFF334155)],
+                            : [const Color(0xFF0F172A), const Color(0xFF1E3A5F)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -182,14 +246,14 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
-                                     Text(
-                                       monetization.isPro
-                                           ? 'Sincronizado • Plan PRO'
-                                           : 'Desconectado (Plan Free)',
+                                    Text(
+                                      monetization.isPro
+                                          ? 'Sincronizado • Plan PRO'
+                                          : 'Modo Manual (Plan Gratuito)',
                                       style: TextStyle(
                                         color: monetization.isPro
                                             ? AppColors.primaryLight
-                                            : Colors.amber,
+                                            : Colors.amberAccent,
                                         fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -199,29 +263,32 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                               ],
                             ),
                             if (!monetization.isPro)
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.amber,
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                                child: const Text(
-                                  'PRO',
-                                  style: TextStyle(
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                              InkWell(
+                                onTap: () => context.push('/pro-upgrade'),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 10,
+                                    vertical: 4,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.amber,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Text(
+                                    'PRO',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
                                   ),
                                 ),
                               ),
                           ],
                         ),
-                        const SizedBox(height: 20),
+                        const SizedBox(height: 18),
                         const Divider(color: Colors.white24),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 10),
 
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -271,24 +338,26 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                   const SizedBox(height: 24),
 
                   // ── Acciones Principales ─────────────────────────
-                  const Text(
+                  Text(
                     'Acciones de Respaldo',
                     style: TextStyle(
                       fontSize: 14,
                       fontWeight: FontWeight.bold,
-                      color: AppColors.textPrimary,
+                      color: textPrimary,
                     ),
                   ),
                   const SizedBox(height: 12),
 
+                  // Botón 1: Crear Respaldo (Elevated High Contrast)
                   SizedBox(
                     width: double.infinity,
-                    height: 52,
+                    height: 54,
                     child: ElevatedButton.icon(
                       onPressed: _isBackingUp ? null : _triggerBackup,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
+                        backgroundColor: AppColors.primaryDark,
                         foregroundColor: Colors.white,
+                        elevation: 2,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -298,11 +367,11 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                               width: 20,
                               height: 20,
                               child: CircularProgressIndicator(
-                                strokeWidth: 2,
+                                strokeWidth: 2.5,
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.cloud_upload_rounded),
+                          : const Icon(Icons.cloud_upload_rounded, color: Colors.white),
                       label: Text(
                         _isBackingUp
                             ? 'Generando Respaldo...'
@@ -310,6 +379,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: Colors.white,
                         ),
                       ),
                     ),
@@ -317,22 +387,33 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
 
                   const SizedBox(height: 12),
 
+                  // Botón 2: Restaurar Respaldo (Outlined High Contrast)
                   SizedBox(
                     width: double.infinity,
-                    height: 52,
+                    height: 54,
                     child: OutlinedButton.icon(
                       onPressed: _confirmRestore,
                       style: OutlinedButton.styleFrom(
+                        backgroundColor: AppColors.primaryDark.withValues(alpha: 0.08),
+                        foregroundColor: AppColors.primaryDark,
+                        side: const BorderSide(
+                          color: AppColors.primaryDark,
+                          width: 2.0,
+                        ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(Icons.cloud_download_rounded),
+                      icon: const Icon(
+                        Icons.cloud_download_rounded,
+                        color: AppColors.primaryDark,
+                      ),
                       label: const Text(
                         'Restaurar Respaldo de Google Drive',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
+                          color: AppColors.primaryDark,
                         ),
                       ),
                     ),
@@ -340,59 +421,75 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
 
                   const SizedBox(height: 24),
 
-                  // ── Opciones de Configuración ────────────────────
+                  // ── Switch Container con Alto Contraste ─────────────
                   Container(
                     decoration: BoxDecoration(
-                      color: AppColors.card,
+                      color: cardBg,
                       borderRadius: BorderRadius.circular(16),
-                      border: Border.all(color: AppColors.border),
-                    ),
-                    child: Column(
-                      children: [
-                        SwitchListTile(
-                          title: const Text(
-                            'Auto-Respaldo Diario',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          subtitle: const Text(
-                            'Genera una copia automática cada 24 horas.',
-                            style: TextStyle(fontSize: 12),
-                          ),
-                          value: _metadata.isAutoBackupEnabled,
-                          activeTrackColor: AppColors.primaryLight,
-                          onChanged: (val) async {
-                            await _backupService.setAutoBackupEnabled(val);
-                            _loadMetadata();
-                          },
+                      border: Border.all(color: borderCol, width: 1.5),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 8,
+                          offset: const Offset(0, 2),
                         ),
                       ],
+                    ),
+                    child: SwitchListTile(
+                      title: Text(
+                        'Auto-Respaldo Diario',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.bold,
+                          color: textPrimary,
+                        ),
+                      ),
+                      subtitle: Text(
+                        'Genera una copia automática de seguridad cada 24 horas.',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: textSecondary,
+                        ),
+                      ),
+                      value: _metadata.isAutoBackupEnabled,
+                      activeTrackColor: AppColors.primary,
+                      activeThumbColor: Colors.white,
+                      onChanged: (val) async {
+                        await _backupService.setAutoBackupEnabled(val);
+                        _loadMetadata();
+                      },
                     ),
                   ),
 
                   const SizedBox(height: 24),
 
-                  // ── Beneficios PRO ───────────────────────────────
+                  // ── Beneficios Nube con Alto Contraste ───────────
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: AppColors.surfaceVariant,
+                      color: AppColors.primary.withValues(alpha: 0.08),
                       borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: AppColors.primary.withValues(alpha: 0.25),
+                      ),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Row(
                           children: [
-                            Icon(Icons.shield_outlined, color: AppColors.primary),
+                            Icon(
+                              Icons.shield_rounded,
+                              color: AppColors.primaryDark,
+                              size: 22,
+                            ),
                             SizedBox(width: 8),
                             Text(
-                              '¿Por qué guardar en la Nube?',
+                              '¿Por qué guardar tus respaldos en la Nube?',
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.bold,
+                                color: AppColors.primaryDark,
                               ),
                             ),
                           ],
@@ -401,11 +498,13 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                         _buildFeatureItem(
                           '100% Privado:',
                           'Tus datos van directo a tu Google Drive personal, sin servidores de terceros.',
+                          textPrimary,
                         ),
-                        const SizedBox(height: 6),
+                        const SizedBox(height: 8),
                         _buildFeatureItem(
                           'Cambio de Teléfono:',
                           'Restaura tus clientes, fiados e inventario en segundos si cambias de móvil.',
+                          textPrimary,
                         ),
                       ],
                     ),
@@ -416,19 +515,28 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     );
   }
 
-  Widget _buildFeatureItem(String title, String desc) {
+  Widget _buildFeatureItem(String title, String desc, Color textColor) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text('• ', style: TextStyle(fontWeight: FontWeight.bold)),
+        const Text(
+          '• ',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.primaryDark,
+          ),
+        ),
         Expanded(
           child: RichText(
             text: TextSpan(
-              style: const TextStyle(fontSize: 12, color: AppColors.textPrimary),
+              style: TextStyle(fontSize: 12, color: textColor),
               children: [
                 TextSpan(
                   text: '$title ',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primaryDark,
+                  ),
                 ),
                 TextSpan(text: desc),
               ],
