@@ -14,3 +14,7 @@
 # Firebase rules
 -keep class com.google.firebase.** { *; }
 -dontwarn com.google.firebase.**
+
+# Google Play Core / SplitCompat R8 rules
+-dontwarn com.google.android.play.core.**
+-keep class com.google.android.play.core.** { *; }

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../shared/providers/settings_provider.dart';
+import '../../shared/providers/business_profile_provider.dart';
+import '../../shared/providers/monetization_provider.dart';
 
-/// Pantalla de ajustes de la aplicación.
+/// Pantalla de ajustes de CuentasClaras Mini ERP Lite.
 class SettingsScreen extends ConsumerWidget {
   const SettingsScreen({super.key});
 
@@ -13,16 +16,76 @@ class SettingsScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final settingsNotifier = ref.read(settingsProvider.notifier);
+    final profile = ref.watch(businessProfileProvider);
+    final monetization = ref.watch(monetizationProvider);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Ajustes'),
+        title: const Text('Ajustes & Configuración'),
       ),
       body: ListView(
         padding: const EdgeInsets.all(AppTheme.spacingMd),
         children: [
-          // ── Moneda predeterminada ─────────────────────────
-          _SectionHeader(title: 'General'),
+          // ── Perfil de Negocio ────────────────────────────
+          const _SectionHeader(title: 'Perfil de Negocio & Rubro'),
+          Card(
+            child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: profile.businessType.primaryColor.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  profile.businessType.icon,
+                  color: profile.businessType.primaryColor,
+                ),
+              ),
+              title: Text(
+                profile.businessName,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                'Rubro: ${profile.businessType.label}',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/onboarding'),
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacingLg),
+
+          // ── Monetización & Plan PRO ──────────────────────
+          const _SectionHeader(title: 'Suscripción & Monetización'),
+          Card(
+            child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: const BoxDecoration(
+                  color: Colors.amber,
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.star_rounded,
+                  color: Colors.black,
+                ),
+              ),
+              title: Text(
+                monetization.isPro ? 'Plan PRO Activo' : 'Versión Gratuita (Con Ads)',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                monetization.isPro
+                    ? 'Disfruta de la experiencia sin anuncios y ticketera POS.'
+                    : 'Actualiza a PRO para eliminar anuncios e imprimir tickets.',
+              ),
+              trailing: const Icon(Icons.chevron_right),
+              onTap: () => context.push('/pro-upgrade'),
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacingLg),
+
+          // ── Moneda Predeterminada ─────────────────────────
+          const _SectionHeader(title: 'General'),
           Card(
             child: Column(
               children: [
@@ -42,7 +105,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: AppTheme.spacingLg),
 
           // ── Seguridad ─────────────────────────────────────
-          _SectionHeader(title: 'Seguridad'),
+          const _SectionHeader(title: 'Seguridad'),
           Card(
             child: Column(
               children: [
@@ -69,7 +132,7 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: AppTheme.spacingLg),
 
           // ── Apariencia ────────────────────────────────────
-          _SectionHeader(title: 'Apariencia'),
+          const _SectionHeader(title: 'Apariencia'),
           Card(
             child: RadioGroup<ThemeMode>(
               groupValue: settings.themeMode,
@@ -103,14 +166,14 @@ class SettingsScreen extends ConsumerWidget {
           const SizedBox(height: AppTheme.spacingLg),
 
           // ── Acerca de ─────────────────────────────────────
-          _SectionHeader(title: 'Acerca de'),
+          const _SectionHeader(title: 'Acerca de'),
           Card(
             child: Column(
               children: [
                 ListTile(
                   leading: const Icon(Icons.info_outline),
                   title: const Text(AppConstants.appName),
-                  subtitle: Text('Versión ${AppConstants.appVersion}'),
+                  subtitle: Text('Versión ${AppConstants.appVersion} (Mini ERP Lite)'),
                 ),
                 const Divider(height: 0),
                 const ListTile(

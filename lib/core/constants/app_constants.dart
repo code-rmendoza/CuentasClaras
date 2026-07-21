@@ -10,7 +10,7 @@ class AppConstants {
 
   // ── Database ──────────────────────────────────────────────
   static const String databaseName = 'cuentas_claras.db';
-  static const int databaseVersion = 2;
+  static const int databaseVersion = 3;
 
   // ── PIN ───────────────────────────────────────────────────
   static const String pinStorageKey = 'user_pin';
@@ -52,6 +52,56 @@ class AppConstants {
     'MXN': 'Peso mexicano',
     'BRL': 'Real',
   };
+
+  // ── Expense Categories ────────────────────────────────────
+  static const List<String> expenseCategories = [
+    'alquiler',
+    'servicios',
+    'mercaderia',
+    'salarios',
+    'impuestos',
+    'transporte',
+    'marketing',
+    'mantenimiento',
+    'otro',
+  ];
+
+  static const Map<String, String> expenseCategoryNames = {
+    'alquiler': 'Alquiler',
+    'servicios': 'Servicios (luz, agua, internet)',
+    'mercaderia': 'Mercadería/Inventario',
+    'salarios': 'Salarios/Personal',
+    'impuestos': 'Impuestos',
+    'transporte': 'Transporte/Combustible',
+    'marketing': 'Marketing/Publicidad',
+    'mantenimiento': 'Mantenimiento/Reparaciones',
+    'otro': 'Otros',
+  };
+
+  // ── Payment Methods ───────────────────────────────────────
+  static const List<String> paymentMethods = [
+    'cash',
+    'card',
+    'transfer',
+    'mobile',
+  ];
+
+  static const Map<String, String> paymentMethodNames = {
+    'cash': 'Efectivo',
+    'card': 'Tarjeta',
+    'transfer': 'Transferencia',
+    'mobile': 'Pago móvil',
+  };
+
+  // ── Inventory Units ───────────────────────────────────────
+  static const List<String> inventoryUnits = [
+    'kg',
+    'g',
+    'L',
+    'ml',
+    'units',
+    'packs',
+  ];
 
   // ── Export ────────────────────────────────────────────────
   static const String exportFolderName = 'CuentasClaras_Exports';

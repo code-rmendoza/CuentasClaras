@@ -9,10 +9,18 @@ import 'tables/debts_table.dart';
 import 'tables/payments_table.dart';
 import 'tables/products_table.dart';
 import 'tables/exchange_rates_table.dart';
+import 'tables/incomes_table.dart';
+import 'tables/expenses_table.dart';
+import 'tables/daily_cash_table.dart';
+import 'tables/inventory_table.dart';
 import 'daos/clients_dao.dart';
 import 'daos/debts_dao.dart';
 import 'daos/payments_dao.dart';
 import 'daos/products_dao.dart';
+import 'daos/incomes_dao.dart';
+import 'daos/expenses_dao.dart';
+import 'daos/daily_cash_dao.dart';
+import 'daos/inventory_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -21,8 +29,27 @@ part 'app_database.g.dart';
 /// Usa Drift (SQLite) como motor embebido local.
 /// Todas las operaciones son offline-first.
 @DriftDatabase(
-  tables: [Clients, Debts, Payments, Products, ExchangeRates],
-  daos: [ClientsDao, DebtsDao, PaymentsDao, ProductsDao],
+  tables: [
+    Clients,
+    Debts,
+    Payments,
+    Products,
+    ExchangeRates,
+    Incomes,
+    Expenses,
+    DailyCashRegister,
+    Inventory,
+  ],
+  daos: [
+    ClientsDao,
+    DebtsDao,
+    PaymentsDao,
+    ProductsDao,
+    IncomesDao,
+    ExpensesDao,
+    DailyCashDao,
+    InventoryDao,
+  ],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -40,7 +67,12 @@ class AppDatabase extends _$AppDatabase {
         await m.createAll();
       },
       onUpgrade: (Migrator m, int from, int to) async {
-        // Futuras migraciones aquí
+        if (from < 3) {
+          await m.createTable(incomes);
+          await m.createTable(expenses);
+          await m.createTable(dailyCashRegister);
+          await m.createTable(inventory);
+        }
       },
     );
   }

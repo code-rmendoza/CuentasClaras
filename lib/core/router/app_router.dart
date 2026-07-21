@@ -9,10 +9,15 @@ import '../../features/products/products_screen.dart';
 import '../../features/reports/reports_screen.dart';
 import '../../features/export/export_screen.dart';
 import '../../features/settings/settings_screen.dart';
+import '../../features/onboarding/business_onboarding_screen.dart';
+import '../../features/monetization/pro_upgrade_screen.dart';
+import '../../features/barberia/barberia_screen.dart';
+import '../../features/reposteria/recipes_screen.dart';
+import '../../features/inmobiliaria/properties_screen.dart';
+import '../../features/pos/pos_screen.dart';
+import '../../features/incomes/register_income_screen.dart';
 
-/// Configuración de rutas de la aplicación.
-///
-/// Usa GoRouter para navegación declarativa con deep linking.
+/// Configuración de rutas de CuentasClaras Mini ERP Lite.
 class AppRouter {
   AppRouter._();
 
@@ -22,10 +27,17 @@ class AppRouter {
   static const String clientDetail = '/clients/:id';
   static const String registerDebt = '/debts/new';
   static const String registerPayment = '/payments/new';
+  static const String registerIncome = '/incomes/new';
   static const String products = '/products';
   static const String reports = '/reports';
   static const String export = '/export';
   static const String settings = '/settings';
+  static const String onboarding = '/onboarding';
+  static const String proUpgrade = '/pro-upgrade';
+  static const String barberia = '/barberia';
+  static const String reposteria = '/reposteria';
+  static const String inmobiliaria = '/inmobiliaria';
+  static const String pos = '/pos';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -67,6 +79,36 @@ class AppRouter {
       ),
 
       // ── Rutas fuera del shell (pantalla completa) ─────────
+      GoRoute(
+        path: onboarding,
+        name: 'onboarding',
+        builder: (context, state) => const BusinessOnboardingScreen(),
+      ),
+      GoRoute(
+        path: proUpgrade,
+        name: 'proUpgrade',
+        builder: (context, state) => const ProUpgradeScreen(),
+      ),
+      GoRoute(
+        path: barberia,
+        name: 'barberia',
+        builder: (context, state) => const BarberiaScreen(),
+      ),
+      GoRoute(
+        path: reposteria,
+        name: 'reposteria',
+        builder: (context, state) => const RecipesScreen(),
+      ),
+      GoRoute(
+        path: inmobiliaria,
+        name: 'inmobiliaria',
+        builder: (context, state) => const PropertiesScreen(),
+      ),
+      GoRoute(
+        path: pos,
+        name: 'pos',
+        builder: (context, state) => const PosScreen(),
+      ),
       GoRoute(
         path: clientDetail,
         name: 'clientDetail',
@@ -113,6 +155,11 @@ class AppRouter {
         path: export,
         name: 'export',
         builder: (context, state) => const ExportScreen(),
+      ),
+      GoRoute(
+        path: registerIncome,
+        name: 'registerIncome',
+        builder: (context, state) => const RegisterIncomeScreen(),
       ),
     ],
   );

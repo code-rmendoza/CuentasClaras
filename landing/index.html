@@ -3,21 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CuentasClaras — El cuaderno digital de fiados para tu negocio</title>
-    <meta name="description" content="Lleva el control de fiados y cobros en tu bodega o comercio sin pagar nada. 100% gratis, sin internet y sin registros complicados.">
+    <title>CuentasClaras Mini ERP Lite — Software Libre para Pequeños Negocios y Emprendedores</title>
+    <meta name="description" content="Mini ERP Lite 100% offline y gratuito para bodegas, barberías, reposterías e inmobiliarias en LATAM. Control de caja, fiados con WhatsApp, comisiones e inventario.">
+    <meta name="keywords" content="ERP gratis, bodegas, barberias, reposteria, inmobiliarias, fiados whatsapp, caja chica, punto de venta gratis, latam">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #10B981;
             --primary-dark: #059669;
+            --primary-light: #34D399;
             --secondary: #1E3A5F;
-            --dark: #0C0A09;
+            --accent-purple: #7C4DFF;
+            --accent-pink: #E91E63;
+            --dark-bg: #0F172A;
             --surface: #FAFAF9;
-            --text: #1C1917;
-            --text-muted: #78716C;
-            --radius: 16px;
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
+            --shadow-glow: 0 15px 35px -5px rgba(16, 185, 129, 0.35);
         }
 
         * {
@@ -29,210 +38,665 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--surface);
-            color: var(--text);
+            color: var(--text-main);
             line-height: 1.6;
+            overflow-x: hidden;
         }
 
-        header {
-            background: linear-gradient(135deg, var(--secondary) 0%, #0F766E 100%);
-            color: white;
-            padding: 4rem 1.5rem;
-            text-align: center;
-            border-bottom-left-radius: 32px;
-            border-bottom-right-radius: 32px;
+        h1, h2, h3, h4, .brand-font {
+            font-family: 'Outfit', sans-serif;
         }
 
-        .badge {
-            display: inline-block;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(8px);
-            color: #34D399;
-            padding: 0.4rem 1rem;
-            border-radius: 99px;
-            font-size: 0.875rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-        }
-
-        h1 {
-            font-size: 2.75rem;
-            font-weight: 800;
-            letter-spacing: -0.025em;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .subtitle {
-            font-size: 1.25rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto 2rem;
-        }
-
-        .btn-download {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.75rem;
-            background-color: var(--primary);
-            color: white;
-            text-decoration: none;
+        /* ── Navbar ────────────────────────────────────────── */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-color);
             padding: 1rem 2rem;
-            border-radius: 12px;
-            font-weight: 700;
-            font-size: 1.125rem;
-            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
-            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .btn-download:hover {
-            background-color: var(--primary-dark);
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .logo-text {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--secondary);
+            letter-spacing: -0.02em;
+        }
+
+        .logo-badge {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--primary-dark);
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 6px;
+            text-transform: uppercase;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+            list-style: none;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--primary-dark);
+        }
+
+        .btn-nav {
+            background: var(--primary);
+            color: white !important;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            transition: transform 0.2s;
+        }
+
+        .btn-nav:hover {
             transform: translateY(-2px);
         }
 
-        .container {
-            max-width: 1000px;
+        /* ── Hero Section ──────────────────────────────────── */
+        .hero {
+            position: relative;
+            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #064E3B 100%);
+            color: white;
+            padding: 6rem 1.5rem 8rem;
+            text-align: center;
+            border-bottom-left-radius: 40px;
+            border-bottom-right-radius: 40px;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -20%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 800px;
+            height: 800px;
+            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0,0,0,0) 70%);
+            pointer-events: none;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            padding: 0.5rem 1.25rem;
+            border-radius: 99px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--primary-light);
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            max-width: 900px;
+            margin: 0 auto 1.5rem;
+        }
+
+        .hero h1 span {
+            background: linear-gradient(135deg, #34D399 0%, #A7F3D0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: #94A3B8;
+            max-width: 680px;
+            margin: 0 auto 2.5rem;
+            font-weight: 400;
+        }
+
+        .hero-ctas {
+            display: flex;
+            justify-content: center;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+            margin-bottom: 3.5rem;
+        }
+
+        .btn-hero-primary {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 1.1rem 2.2rem;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 1.15rem;
+            box-shadow: var(--shadow-glow);
+            transition: all 0.25s ease;
+        }
+
+        .btn-hero-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px -5px rgba(16, 185, 129, 0.5);
+        }
+
+        .btn-hero-secondary {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            text-decoration: none;
+            padding: 1.1rem 2rem;
+            border-radius: 14px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            backdrop-filter: blur(8px);
+            transition: all 0.2s ease;
+        }
+
+        .btn-hero-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 3rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding-top: 2rem;
+            max-width: 700px;
             margin: 0 auto;
-            padding: 4rem 1.5rem;
         }
 
-        .features {
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-num {
+            font-size: 1.75rem;
+            font-weight: 800;
+            color: white;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #94A3B8;
+        }
+
+        /* ── Container General ─────────────────────────────── */
+        .section-container {
+            max-width: 1140px;
+            margin: 0 auto;
+            padding: 5rem 1.5rem;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 700px;
+            margin: 0 auto 3.5rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            color: var(--secondary);
+        }
+
+        .section-header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        /* ── Rubros Grid (Smart Modules) ───────────────────── */
+        .rubros-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 2rem;
-            margin-bottom: 4rem;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 1.5rem;
         }
 
-        .feature-card {
-            background: white;
+        .rubro-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
             padding: 2rem;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.04);
-            border: 1px solid #E7E5E4;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-soft);
         }
 
-        .feature-icon {
+        .rubro-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary-light);
+            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+        }
+
+        .rubro-icon {
+            width: 54px;
+            height: 54px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.75rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .rubro-card h3 {
+            font-size: 1.35rem;
+            font-weight: 700;
+            margin-bottom: 0.6rem;
+        }
+
+        .rubro-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        /* ── Features List ─────────────────────────────────── */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .feature-box {
+            display: flex;
+            gap: 1.25rem;
+            background: white;
+            padding: 1.75rem;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .feature-icon-wrapper {
             width: 48px;
             height: 48px;
             background: rgba(16, 185, 129, 0.1);
-            color: var(--primary);
+            color: var(--primary-dark);
             border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            margin-bottom: 1rem;
+            flex-shrink: 0;
         }
 
-        .feature-card h3 {
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
+        .feature-box h4 {
+            font-size: 1.15rem;
+            margin-bottom: 0.4rem;
+            font-weight: 700;
         }
 
-        .feature-card p {
+        .feature-box p {
             color: var(--text-muted);
-            font-size: 0.95rem;
+            font-size: 0.925rem;
         }
 
-        .instructions {
-            background: white;
-            border-radius: var(--radius);
-            padding: 2.5rem;
-            border: 1px solid #E7E5E4;
-        }
-
-        .instructions h2 {
-            font-size: 1.75rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .step {
-            display: flex;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .step-num {
-            width: 36px;
-            height: 36px;
-            background: var(--secondary);
+        /* ── Installation Steps ────────────────────────────── */
+        .steps-card {
+            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
             color: white;
+            border-radius: 28px;
+            padding: 3.5rem 2.5rem;
+            margin-top: 3rem;
+        }
+
+        .steps-card h2 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            text-align: center;
+            margin-bottom: 3rem;
+            color: white;
+        }
+
+        .steps-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+
+        .step-item {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 18px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .step-number {
+            width: 44px;
+            height: 44px;
+            background: var(--primary);
+            color: white;
+            font-weight: 800;
+            font-size: 1.2rem;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-weight: 700;
-            flex-shrink: 0;
+            margin: -3.2rem auto 1.25rem;
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
         }
 
-        footer {
-            text-align: center;
-            padding: 2rem;
+        .step-item h4 {
+            font-size: 1.15rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-item p {
+            color: #94A3B8;
+            font-size: 0.9rem;
+        }
+
+        /* ── FAQ Section ───────────────────────────────────── */
+        .faq-accordion {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .faq-item {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            margin-bottom: 1rem;
+            padding: 1.25rem 1.5rem;
+        }
+
+        .faq-item h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--secondary);
+        }
+
+        .faq-item p {
             color: var(--text-muted);
-            font-size: 0.875rem;
-            border-top: 1px solid #E7E5E4;
+            font-size: 0.95rem;
+        }
+
+        /* ── Footer ────────────────────────────────────────── */
+        footer {
+            background: #0F172A;
+            color: #94A3B8;
+            padding: 3rem 1.5rem;
+            text-align: center;
+            font-size: 0.9rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .hero-stats {
+                gap: 1.5rem;
+            }
+            .nav-links {
+                display: none;
+            }
         }
     </style>
 </head>
 <body>
-    <header>
-        <div class="badge">🚀 App Gratuita Local-First</div>
-        <h1>CuentasClaras</h1>
-        <p class="subtitle">El cuaderno digital para bodegas y comercios. Registra fiados y abonos en menos de 3 clics sin depender de internet.</p>
-        <a href="https://github.com/code-rmendoza/CuentasClaras/releases" class="btn-download" target="_blank" rel="noopener">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            Descargar APK Directo (Gratis)
+
+    <!-- ── Navbar ────────────────────────────────────────────── -->
+    <nav class="navbar">
+        <a href="#" class="logo-container">
+            <div class="logo-icon">C</div>
+            <span class="logo-text">CuentasClaras</span>
+            <span class="logo-badge">Mini ERP</span>
         </a>
+        <ul class="nav-links">
+            <li><a href="#rubros">Rubros</a></li>
+            <li><a href="#funciones">Funciones</a></li>
+            <li><a href="#instalacion">Instalación</a></li>
+            <li><a href="#faq">FAQ</a></li>
+            <li><a href="./cuentas_claras_v0.1.0.apk" class="btn-nav" download>Descargar APK</a></li>
+        </ul>
+    </nav>
+
+    <!-- ── Hero Section ──────────────────────────────────────── -->
+    <header class="hero">
+        <div class="hero-badge">
+            ⚡ 100% Offline-First • Sin Internet Requerido
+        </div>
+        <h1>El Mini ERP Lite para <span>Pequeños Negocios y Emprendedores</span></h1>
+        <p class="hero-subtitle">
+            Reemplaza tu libreta de papel por un sistema profesional en tu teléfono. Lleva la caja chica, fiados por WhatsApp, comisiones de personal y utilidades reales.
+        </p>
+
+        <div class="hero-ctas">
+            <a href="./cuentas_claras_v0.1.0.apk" class="btn-hero-primary" download>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Descargar APK Directo v0.1.0
+            </a>
+            <a href="#instalacion" class="btn-hero-secondary">
+                Ver Guía de Instalación ↓
+            </a>
+        </div>
+
+        <div class="hero-stats">
+            <div class="stat-item">
+                <div class="stat-num">$0 USD</div>
+                <div class="stat-label">Costo de Inicio</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">5+</div>
+                <div class="stat-label">Rubros Especializados</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-num">100%</div>
+                <div class="stat-label">Privacidad Local</div>
+            </div>
+        </div>
     </header>
 
-    <main class="container">
-        <section class="features">
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Registro en 3 Clics</h3>
-                <p>Diseñado para que registres fiados en segundos mientras atiendes a tus clientes. Simple, directo y rápido.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📴</div>
-                <h3>100% Offline (Sin Internet)</h3>
-                <p>Tus datos se guardan de forma segura en tu teléfono. No necesitas saldo ni datos para usar la aplicación.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">💵</div>
-                <h3>Multimoneda Flexible</h3>
-                <p>Registra en Dólares (USD), Bolívares (VES), Pesos (COP) o la moneda de tu país con calculadora integrada.</p>
-            </div>
-            <div class="feature-card">
-                <div class="feature-icon">📲</div>
-                <h3>Cobro por WhatsApp</h3>
-                <p>Exporta estados de cuenta claros en PDF o texto y envíalos a tus clientes con un solo botón.</p>
-            </div>
-        </section>
+    <!-- ── Rubros Especializados ────────────────────────────── -->
+    <section id="rubros" class="section-container">
+        <div class="section-header">
+            <h2>Diseñado para tu Actividad Específica</h2>
+            <p>Al abrir la app por primera vez, selecciona tu rubro para adaptar automáticamente tus opciones y reportes.</p>
+        </div>
 
-        <section class="instructions">
-            <h2>Cómo instalar CuentasClaras en tu Android</h2>
-            <div class="step">
-                <div class="step-num">1</div>
-                <div>
-                    <strong>Descarga el APK:</strong> Haz clic en el botón de descarga arriba para obtener el archivo de instalación.
-                </div>
+        <div class="rubros-grid">
+            <div class="rubro-card">
+                <div class="rubro-icon" style="background: rgba(16, 185, 129, 0.15); color: #059669;">🛒</div>
+                <h3>Bodegas & Minimarkets</h3>
+                <p>Cobro express POS en 2 toques, control de fiados con recordatorios por WhatsApp, cuadre de caja diaria y alertas de stock bajo.</p>
             </div>
-            <div class="step">
-                <div class="step-num">2</div>
-                <div>
-                    <strong>Permite la instalación:</strong> Si tu teléfono te pide permiso, selecciona "Permitir desde esta fuente" o habilita orígenes desconocidos.
-                </div>
-            </div>
-            <div class="step">
-                <div class="step-num">3</div>
-                <div>
-                    <strong>¡Listo para usar!</strong> Abre CuentasClaras y comienza a llevar el control de tu negocio sin registros ni cuentas requeridas.
-                </div>
-            </div>
-        </section>
-    </main>
 
+            <div class="rubro-card">
+                <div class="rubro-icon" style="background: rgba(30, 136, 229, 0.15); color: #1E88E5;">💈</div>
+                <h3>Barberías & Estética</h3>
+                <p>Catálogo de cortes y servicios, registro de atenciones del día y cálculo automático de comisiones por barbero o estilista.</p>
+            </div>
+
+            <div class="rubro-card">
+                <div class="rubro-icon" style="background: rgba(233, 30, 99, 0.15); color: #E91E63;">🍰</div>
+                <h3>Repostería & Encargos</h3>
+                <p>Calculador de costo de recetas (materia prima vs. margen neto real), control de pedidos a entregar y cobro de señas/anticipos.</p>
+            </div>
+
+            <div class="rubro-card">
+                <div class="rubro-icon" style="background: rgba(124, 77, 255, 0.15); color: #7C4DFF;">🏠</div>
+                <h3>Inmobiliarias & Agentes</h3>
+                <p>Catálogo de inmuebles en venta o alquiler, comisiones calculadas y generación de recibos/comprobantes de reserva en PDF.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Funciones Principales ────────────────────────────── -->
+    <section id="funciones" class="section-container" style="background: #F1F5F9; border-radius: 32px;">
+        <div class="section-header">
+            <h2>Todo lo que Necesitas para Crecer</h2>
+            <p>Herramientas potentes simplificadas para operar desde cualquier teléfono Android.</p>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">📱</div>
+                <div>
+                    <h4>Punto de Venta POS Express</h4>
+                    <p>Registra ventas en efectivo, pago móvil o transferencia en segundos y emite el ticket directo a WhatsApp.</p>
+                </div>
+            </div>
+
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">📴</div>
+                <div>
+                    <h4>Operación 100% Offline</h4>
+                    <p>Tus datos financieros viven seguros en la memoria de tu teléfono. No dependes de internet ni pagos mensuales de servidor.</p>
+                </div>
+            </div>
+
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">💬</div>
+                <div>
+                    <h4>Cobros por WhatsApp con 1-Tap</h4>
+                    <p>Envía mensajes cordiales y estados de cuenta en PDF a tus clientes sin tener que tipear números manualmente.</p>
+                </div>
+            </div>
+
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">💵</div>
+                <div>
+                    <h4>Multimoneda Flexible (LATAM)</h4>
+                    <p>Maneja Dólares (USD), Bolívares (VES), Pesos (COP), Soles (PEN) y ajusta la tasa del día fácilmente.</p>
+                </div>
+            </div>
+
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">🖨️</div>
+                <div>
+                    <h4>Impresión Térmica Bluetooth (PRO)</h4>
+                    <p>Imprime recibos físicos POS en ticketera móvil de 58mm y 80mm al instante.</p>
+                </div>
+            </div>
+
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">📊</div>
+                <div>
+                    <h4>Reportes de Ganancia Neta Real</h4>
+                    <p>Descubre cuánto ganas realmente restando tus costos operativos e insumos a las ventas totales.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Guía de Instalación ──────────────────────────────── -->
+    <section id="instalacion" class="section-container">
+        <div class="steps-card">
+            <h2>¿Cómo Instalar CuentasClaras en 3 Pasos?</h2>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-number">1</div>
+                    <h4>Descarga el APK</h4>
+                    <p>Haz clic en el botón de descarga para guardar el instalador oficial en tu teléfono.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">2</div>
+                    <h4>Permite Instalación</h4>
+                    <p>Si Android lo solicita, activa "Permitir desde esta fuente" u orígenes desconocidos.</p>
+                </div>
+                <div class="step-item">
+                    <div class="step-number">3</div>
+                    <h4>Selecciona tu Rubro</h4>
+                    <p>Abre CuentasClaras, elige tu actividad y comienza a registrar sin crear cuentas ni contraseñas.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── FAQ ──────────────────────────────────────────────── -->
+    <section id="faq" class="section-container">
+        <div class="section-header">
+            <h2>Preguntas Frecuentes</h2>
+        </div>
+
+        <div class="faq-accordion">
+            <div class="faq-item">
+                <h4>¿Es realmente gratis?</h4>
+                <p>Sí, la versión gratuita incluye todas las funciones de registro de caja, fiados, productos y ventas de forma ilimitada con pequeños anuncios no invasivos.</p>
+            </div>
+            <div class="faq-item">
+                <h4>¿Qué ventajas ofrece el Plan PRO?</h4>
+                <p>El Plan PRO elimina completamente los anuncios, permite imprimir tickets físicos en impresoras térmicas Bluetooth, personalizar tu logo en los recibos y respaldar tus datos en Google Drive.</p>
+            </div>
+            <div class="faq-item">
+                <h4>¿Mis datos financieros están seguros?</h4>
+                <p>Absolutamente. CuentasClaras opera bajo la arquitectura Local-First, lo que significa que tus datos se quedan en tu propio teléfono y nadie más tiene acceso a ellos.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ── Footer ───────────────────────────────────────────── -->
     <footer>
-        <p>&copy; 2026 CuentasClaras — Diseñado para el comercio local en Latinoamérica.</p>
+        <p>&copy; 2026 CuentasClaras Mini ERP Lite — Diseñado con ❤️ para emprendedores y comerciantes en Latinoamérica.</p>
+        <p style="margin-top: 10px;">
+            <a href="app-ads.txt" target="_blank">Archivo app-ads.txt oficial</a> • 
+            <a href="https://github.com/code-rmendoza/CuentasClaras" target="_blank">Código Fuente en GitHub</a>
+        </p>
     </footer>
+
 </body>
 </html>
