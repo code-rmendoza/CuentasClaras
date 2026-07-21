@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/providers/business_profile_provider.dart';
 import '../../shared/widgets/ad_banner_widget.dart';
+import '../../shared/widgets/thermal_printer_dialog.dart';
 
 class PosScreen extends ConsumerStatefulWidget {
   const PosScreen({super.key});
@@ -47,6 +48,9 @@ class _PosScreenState extends ConsumerState<PosScreen> {
     if (_cart.isEmpty) return;
 
     final profile = ref.read(businessProfileProvider);
+    final savedCart = List<Map<String, dynamic>>.from(_cart);
+    final total = _cartTotal;
+    final ticketId = '${DateTime.now().millisecondsSinceEpoch}'.substring(5);
 
     showDialog(
       context: context,
@@ -67,12 +71,12 @@ class _PosScreenState extends ConsumerState<PosScreen> {
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
-            Text('Total Cobrado: \$${_cartTotal.toStringAsFixed(2)}'),
+            Text('Total Cobrado: \$${total.toStringAsFixed(2)}'),
             const SizedBox(height: 4),
             Text('Método: $paymentMethod'),
             const SizedBox(height: 12),
             const Text(
-              'Ticket de venta generado. ¿Deseas enviarlo por WhatsApp?',
+              '¿Deseas imprimir el ticket en la impresora térmica Bluetooth o enviarlo por WhatsApp?',
               style: TextStyle(fontSize: 12, color: AppColors.textSecondary),
             ),
           ],
@@ -85,6 +89,21 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             },
             child: const Text('Cerrar'),
           ),
+          OutlinedButton.icon(
+            onPressed: () {
+              Navigator.pop(ctx);
+              ThermalPrinterDialog.show(
+                context,
+                ticketId: ticketId,
+                items: savedCart,
+                totalAmount: total,
+                paymentMethod: paymentMethod,
+              );
+              setState(() => _cart.clear());
+            },
+            icon: const Icon(Icons.print_rounded, size: 18),
+            label: const Text('Imprimir POS (PRO)'),
+          ),
           ElevatedButton.icon(
             onPressed: () {
               setState(() => _cart.clear());
@@ -95,8 +114,8 @@ class _PosScreenState extends ConsumerState<PosScreen> {
                 ),
               );
             },
-            icon: const Icon(Icons.send_rounded),
-            label: const Text('Enviar WhatsApp'),
+            icon: const Icon(Icons.send_rounded, size: 18),
+            label: const Text('WhatsApp'),
           ),
         ],
       ),
