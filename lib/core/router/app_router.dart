@@ -16,6 +16,7 @@ import '../../features/reposteria/recipes_screen.dart';
 import '../../features/inmobiliaria/properties_screen.dart';
 import '../../features/pos/pos_screen.dart';
 import '../../features/incomes/register_income_screen.dart';
+import '../../features/settings/backup_restore_screen.dart';
 
 /// Configuración de rutas de CuentasClaras Mini ERP Lite.
 class AppRouter {
@@ -38,6 +39,7 @@ class AppRouter {
   static const String reposteria = '/reposteria';
   static const String inmobiliaria = '/inmobiliaria';
   static const String pos = '/pos';
+  static const String backupRestore = '/backup-restore';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -160,6 +162,11 @@ class AppRouter {
         path: registerIncome,
         name: 'registerIncome',
         builder: (context, state) => const RegisterIncomeScreen(),
+      ),
+      GoRoute(
+        path: backupRestore,
+        name: 'backupRestore',
+        builder: (context, state) => const BackupRestoreScreen(),
       ),
     ],
   );

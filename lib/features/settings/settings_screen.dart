@@ -82,6 +82,59 @@ class SettingsScreen extends ConsumerWidget {
               onTap: () => context.push('/pro-upgrade'),
             ),
           ),
+          // ── Respaldo & Nube ──────────────────────────────
+          const _SectionHeader(title: 'Respaldo & Nube (PRO)'),
+          Card(
+            child: ListTile(
+              leading: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.blueAccent.withValues(alpha: 0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.cloud_sync_rounded,
+                  color: Colors.blueAccent,
+                ),
+              ),
+              title: const Text(
+                'Respaldo en Google Drive',
+                style: TextStyle(fontWeight: FontWeight.bold),
+              ),
+              subtitle: Text(
+                monetization.isPro
+                    ? 'Sincronización activa en tu nube personal.'
+                    : 'Copia de seguridad y restauración automática.',
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if (!monetization.isPro)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Text(
+                        'PRO',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+                    ),
+                  const SizedBox(width: 4),
+                  const Icon(Icons.chevron_right),
+                ],
+              ),
+              onTap: () => context.push('/backup-restore'),
+            ),
+          ),
           const SizedBox(height: AppTheme.spacingLg),
 
           // ── Moneda Predeterminada ─────────────────────────
