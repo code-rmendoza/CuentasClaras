@@ -36,8 +36,133 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     });
   }
 
-  /// Ejecuta el proceso de respaldo a Google Drive.
+  /// Muestra el modal de bloqueo PRO cuando el usuario es Free.
+  void _showProLockModal() {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        return Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: isDark ? AppColors.darkCard : Colors.white,
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.amber.withValues(alpha: 0.15),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.lock_rounded,
+                  color: Colors.amber,
+                  size: 40,
+                ),
+              ),
+              const SizedBox(height: 16),
+              const Text(
+                'Función Exclusiva del Plan PRO',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                'Los respaldos automáticos y restauración en la nube de Google Drive requieren una suscripción PRO activa o puedes probarlo gratis viendo un video corto.',
+                style: TextStyle(
+                  fontSize: 13,
+                  color: AppColors.textSecondary,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 24),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: ElevatedButton.icon(
+                  onPressed: () {
+                    Navigator.pop(ctx);
+                    context.push('/pro-upgrade');
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryDark,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  icon: const Icon(Icons.star_rounded, color: Colors.amber),
+                  label: const Text(
+                    'Actualizar a Plan PRO (\$4.99/mes)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 10),
+              SizedBox(
+                width: double.infinity,
+                height: 50,
+                child: OutlinedButton.icon(
+                  onPressed: () async {
+                    Navigator.pop(ctx);
+                    await ref
+                        .read(monetizationProvider.notifier)
+                        .grantTemporaryReward();
+                    if (mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text(
+                            '¡Video completado! Respaldo en la Nube desbloqueado por 24 horas.',
+                          ),
+                          backgroundColor: AppColors.primary,
+                        ),
+                      );
+                    }
+                  },
+                  style: OutlinedButton.styleFrom(
+                    foregroundColor: Colors.amber.shade800,
+                    side: BorderSide(color: Colors.amber.shade800, width: 1.5),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  icon: const Icon(Icons.play_circle_fill_rounded),
+                  label: const Text(
+                    'Ver Video Anuncio (Probar 24h Gratis)',
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Ejecuta el proceso de respaldo a Google Drive (verificando estado PRO).
   Future<void> _triggerBackup() async {
+    final monetization = ref.read(monetizationProvider);
+    final isUnlocked = monetization.isPro || monetization.cloudBackupEnabled;
+
+    if (!isUnlocked) {
+      _showProLockModal();
+      return;
+    }
+
     setState(() => _isBackingUp = true);
 
     try {
@@ -87,8 +212,16 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
     }
   }
 
-  /// Diálogo interactivo para restaurar respaldos.
+  /// Diálogo interactivo para restaurar respaldos (verificando estado PRO).
   void _confirmRestore() {
+    final monetization = ref.read(monetizationProvider);
+    final isUnlocked = monetization.isPro || monetization.cloudBackupEnabled;
+
+    if (!isUnlocked) {
+      _showProLockModal();
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -129,8 +262,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   Future<void> _processRestoreFile() async {
     final dbFile = await _backupService.getDatabaseFile();
     if (await dbFile.exists()) {
-      final success =
-          await _backupService.restoreFromBackup(dbFile.path);
+      final success = await _backupService.restoreFromBackup(dbFile.path);
       if (mounted && success) {
         showDialog(
           context: context,
@@ -170,6 +302,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   @override
   Widget build(BuildContext context) {
     final monetization = ref.watch(monetizationProvider);
+    final isUnlocked = monetization.isPro || monetization.cloudBackupEnabled;
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     final textPrimary = isDark ? AppColors.darkTextPrimary : AppColors.textPrimary;
@@ -199,9 +332,9 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
-                        colors: monetization.isPro
+                        colors: isUnlocked
                             ? [const Color(0xFF081425), const Color(0xFF064E3B)]
-                            : [const Color(0xFF0F172A), const Color(0xFF1E3A5F)],
+                            : [const Color(0xFF0F172A), const Color(0xFF3A2510)],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
@@ -228,9 +361,13 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                                     color: Colors.white.withValues(alpha: 0.15),
                                     borderRadius: BorderRadius.circular(12),
                                   ),
-                                  child: const Icon(
-                                    Icons.cloud_done_rounded,
-                                    color: AppColors.primaryLight,
+                                  child: Icon(
+                                    isUnlocked
+                                        ? Icons.cloud_done_rounded
+                                        : Icons.cloud_off_rounded,
+                                    color: isUnlocked
+                                        ? AppColors.primaryLight
+                                        : Colors.amber,
                                     size: 28,
                                   ),
                                 ),
@@ -249,9 +386,11 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                                     Text(
                                       monetization.isPro
                                           ? 'Sincronizado • Plan PRO'
-                                          : 'Modo Manual (Plan Gratuito)',
+                                          : (monetization.cloudBackupEnabled
+                                              ? 'Desbloqueado (Video 24h)'
+                                              : 'Bloqueado (Plan Gratuito)'),
                                       style: TextStyle(
-                                        color: monetization.isPro
+                                        color: isUnlocked
                                             ? AppColors.primaryLight
                                             : Colors.amberAccent,
                                         fontSize: 12,
@@ -262,28 +401,40 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                                 ),
                               ],
                             ),
-                            if (!monetization.isPro)
-                              InkWell(
-                                onTap: () => context.push('/pro-upgrade'),
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 10,
-                                    vertical: 4,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.amber,
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  child: const Text(
-                                    'PRO',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
+                            InkWell(
+                              onTap: isUnlocked
+                                  ? null
+                                  : () => _showProLockModal(),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: isUnlocked
+                                      ? AppColors.primary
+                                      : Colors.amber,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    if (!isUnlocked)
+                                      const Icon(Icons.lock_rounded,
+                                          size: 12, color: Colors.black),
+                                    if (!isUnlocked) const SizedBox(width: 4),
+                                    Text(
+                                      isUnlocked ? 'PRO' : 'BLOQUEADO',
+                                      style: const TextStyle(
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
                                     ),
-                                  ),
+                                  ],
                                 ),
                               ),
+                            ),
                           ],
                         ),
                         const SizedBox(height: 18),
@@ -355,7 +506,9 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     child: ElevatedButton.icon(
                       onPressed: _isBackingUp ? null : _triggerBackup,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primaryDark,
+                        backgroundColor: isUnlocked
+                            ? AppColors.primaryDark
+                            : Colors.grey.shade700,
                         foregroundColor: Colors.white,
                         elevation: 2,
                         shape: RoundedRectangleBorder(
@@ -371,11 +524,18 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                                 color: Colors.white,
                               ),
                             )
-                          : const Icon(Icons.cloud_upload_rounded, color: Colors.white),
+                          : Icon(
+                              isUnlocked
+                                  ? Icons.cloud_upload_rounded
+                                  : Icons.lock_rounded,
+                              color: Colors.white,
+                            ),
                       label: Text(
                         _isBackingUp
                             ? 'Generando Respaldo...'
-                            : 'Crear Respaldo en Google Drive Ahora',
+                            : (isUnlocked
+                                ? 'Crear Respaldo en Google Drive Ahora'
+                                : 'Crear Respaldo (Función PRO 🔒)'),
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
@@ -394,26 +554,40 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                     child: OutlinedButton.icon(
                       onPressed: _confirmRestore,
                       style: OutlinedButton.styleFrom(
-                        backgroundColor: AppColors.primaryDark.withValues(alpha: 0.08),
-                        foregroundColor: AppColors.primaryDark,
-                        side: const BorderSide(
-                          color: AppColors.primaryDark,
-                          width: 2.0,
+                        backgroundColor: isUnlocked
+                            ? AppColors.primaryDark.withValues(alpha: 0.08)
+                            : Colors.grey.withValues(alpha: 0.08),
+                        foregroundColor: isUnlocked
+                            ? AppColors.primaryDark
+                            : textSecondary,
+                        side: BorderSide(
+                          color: isUnlocked
+                              ? AppColors.primaryDark
+                              : borderCol,
+                          width: 1.5,
                         ),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
                       ),
-                      icon: const Icon(
-                        Icons.cloud_download_rounded,
-                        color: AppColors.primaryDark,
+                      icon: Icon(
+                        isUnlocked
+                            ? Icons.cloud_download_rounded
+                            : Icons.lock_rounded,
+                        color: isUnlocked
+                            ? AppColors.primaryDark
+                            : textSecondary,
                       ),
-                      label: const Text(
-                        'Restaurar Respaldo de Google Drive',
+                      label: Text(
+                        isUnlocked
+                            ? 'Restaurar Respaldo de Google Drive'
+                            : 'Restaurar Respaldo (Función PRO 🔒)',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.bold,
-                          color: AppColors.primaryDark,
+                          color: isUnlocked
+                              ? AppColors.primaryDark
+                              : textSecondary,
                         ),
                       ),
                     ),
@@ -421,7 +595,7 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
 
                   const SizedBox(height: 24),
 
-                  // ── Switch Container con Alto Contraste ─────────────
+                  // ── Switch Container con Bloqueo PRO ─────────────
                   Container(
                     decoration: BoxDecoration(
                       color: cardBg,
@@ -436,13 +610,21 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                       ],
                     ),
                     child: SwitchListTile(
-                      title: Text(
-                        'Auto-Respaldo Diario',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                          color: textPrimary,
-                        ),
+                      title: Row(
+                        children: [
+                          Text(
+                            'Auto-Respaldo Diario',
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                              color: textPrimary,
+                            ),
+                          ),
+                          if (!isUnlocked) const SizedBox(width: 8),
+                          if (!isUnlocked)
+                            const Icon(Icons.lock_rounded,
+                                size: 14, color: Colors.amber),
+                        ],
                       ),
                       subtitle: Text(
                         'Genera una copia automática de seguridad cada 24 horas.',
@@ -451,10 +633,14 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
                           color: textSecondary,
                         ),
                       ),
-                      value: _metadata.isAutoBackupEnabled,
+                      value: _metadata.isAutoBackupEnabled && isUnlocked,
                       activeTrackColor: AppColors.primary,
                       activeThumbColor: Colors.white,
                       onChanged: (val) async {
+                        if (!isUnlocked) {
+                          _showProLockModal();
+                          return;
+                        }
                         await _backupService.setAutoBackupEnabled(val);
                         _loadMetadata();
                       },
