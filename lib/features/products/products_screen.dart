@@ -163,7 +163,7 @@ class ProductsScreen extends ConsumerWidget {
       ),
     );
 
-    if (result == true) {
+    if (result == true && context.mounted) {
       final priceDouble =
           double.parse(priceController.text.replaceAll(',', '.'));
       await ref.read(productsDaoProvider).insertProduct(
@@ -190,7 +190,7 @@ class ProductsScreen extends ConsumerWidget {
       confirmColor: AppColors.error,
     );
 
-    if (confirmed) {
+    if (confirmed && context.mounted) {
       await ref.read(productsDaoProvider).deactivateProduct(product.id);
       ref.invalidate(activeProductsProvider);
     }

@@ -144,8 +144,8 @@ class ReportsScreen extends ConsumerWidget {
             data: (debts) {
               if (debts.isEmpty) return const SizedBox.shrink();
 
-              // Agrupar por cliente
-              final clientTotals = <String, double>{};
+              // Agrupar por cliente (en centavos enteros)
+              final clientTotals = <String, int>{};
               for (final d in debts) {
                 clientTotals[d.client.name] =
                     (clientTotals[d.client.name] ?? 0) + d.debt.amount;
@@ -157,7 +157,8 @@ class ReportsScreen extends ConsumerWidget {
               return Column(
                 children: sorted.take(5).map((entry) {
                   final maxVal =
-                      sorted.isNotEmpty ? sorted.first.value : 1.0;
+                      sorted.isNotEmpty && sorted.first.value > 0 ? sorted.first.value : 1;
+                  final amountUnits = CurrencyUtils.centsToAmount(entry.value);
                   return Padding(
                     padding: const EdgeInsets.only(bottom: AppTheme.spacingSm),
                     child: Column(
@@ -170,7 +171,7 @@ class ReportsScreen extends ConsumerWidget {
                                 style: const TextStyle(
                                     fontWeight: FontWeight.w500)),
                             Text(
-                              entry.value.toStringAsFixed(2),
+                              amountUnits.toStringAsFixed(2),
                               style: const TextStyle(
                                 fontWeight: FontWeight.w700,
                                 color: AppColors.error,

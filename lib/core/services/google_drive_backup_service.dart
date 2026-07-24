@@ -1,10 +1,12 @@
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../data/database/app_database.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:intl/intl.dart';
+import '../../core/constants/app_constants.dart';
 
 class BackupMetadata {
   final DateTime? lastBackupDate;
@@ -43,7 +45,7 @@ class GoogleDriveBackupService {
   /// Obtiene la ruta del archivo de base de datos SQLite activo.
   Future<File> getDatabaseFile() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    return File(p.join(dbFolder.path, 'cuentas_claras.sqlite'));
+    return File(p.join(dbFolder.path, AppConstants.databaseName));
   }
 
   /// Obtiene los metadatos del último respaldo.
@@ -115,17 +117,40 @@ class GoogleDriveBackupService {
   }
 
   /// Restaura la base de datos desde un archivo de copia de seguridad importado.
-  Future<bool> restoreFromBackup(String sourceFilePath) async {
+  ///
+  /// Cierra la conexión activa de Drift y limpia archivos auxiliares (WAL/SHM)
+  /// para evitar bloqueos (database locks) o corrupción de datos.
+  Future<bool> restoreFromBackup(
+    String sourceFilePath, {
+    AppDatabase? currentDb,
+  }) async {
     try {
       final sourceFile = File(sourceFilePath);
       if (!await sourceFile.exists()) {
+        debugPrint('El archivo de origen no existe: $sourceFilePath');
         return false;
+      }
+
+      // 1. Cerrar conexión activa a la base de datos SQLite si está abierta
+      if (currentDb != null) {
+        await currentDb.close();
       }
 
       final activeDbFile = await getDatabaseFile();
 
-      // Sobrescribe la base de datos actual con la del respaldo
-      await sourceFile.copy(activeDbFile.path);
+      // 2. Limpiar archivos auxiliares de registro (WAL / SHM / Journal)
+      final walFile = File('${activeDbFile.path}-wal');
+      final shmFile = File('${activeDbFile.path}-shm');
+      final journalFile = File('${activeDbFile.path}-journal');
+
+      if (await walFile.exists()) await walFile.delete();
+      if (await shmFile.exists()) await shmFile.delete();
+      if (await journalFile.exists()) await journalFile.delete();
+
+      // 3. Sobrescribir la base de datos activa con el archivo de respaldo
+      if (sourceFile.path != activeDbFile.path) {
+        await sourceFile.copy(activeDbFile.path);
+      }
 
       final now = DateTime.now();
       await _storage.write(

@@ -4,6 +4,10 @@ import '../../data/database/daos/clients_dao.dart';
 import '../../data/database/daos/debts_dao.dart';
 import '../../data/database/daos/payments_dao.dart';
 import '../../data/database/daos/products_dao.dart';
+import '../../data/database/daos/incomes_dao.dart';
+import '../../data/database/daos/expenses_dao.dart';
+import '../../data/database/daos/daily_cash_dao.dart';
+import '../../data/database/daos/inventory_dao.dart';
 
 /// Provider global de la base de datos.
 ///
@@ -34,6 +38,26 @@ final productsDaoProvider = Provider<ProductsDao>((ref) {
   return ref.watch(databaseProvider).productsDao;
 });
 
+/// Provider para el DAO de ingresos.
+final incomesDaoProvider = Provider<IncomesDao>((ref) {
+  return ref.watch(databaseProvider).incomesDao;
+});
+
+/// Provider para el DAO de gastos.
+final expensesDaoProvider = Provider<ExpensesDao>((ref) {
+  return ref.watch(databaseProvider).expensesDao;
+});
+
+/// Provider para el DAO de caja diaria.
+final dailyCashDaoProvider = Provider<DailyCashDao>((ref) {
+  return ref.watch(databaseProvider).dailyCashDao;
+});
+
+/// Provider para el DAO de inventario.
+final inventoryDaoProvider = Provider<InventoryDao>((ref) {
+  return ref.watch(databaseProvider).inventoryDao;
+});
+
 // ── Streams reactivos ────────────────────────────────────────
 
 /// Stream de todos los clientes.
@@ -54,6 +78,21 @@ final totalDebtByCurrencyProvider = FutureProvider<Map<String, double>>((ref) {
 /// Stream de productos activos.
 final activeProductsProvider = StreamProvider<List<Product>>((ref) {
   return ref.watch(productsDaoProvider).watchActiveProducts();
+});
+
+/// Stream de todos los ingresos.
+final allIncomesProvider = StreamProvider<List<IncomeWithClient>>((ref) {
+  return ref.watch(incomesDaoProvider).watchAllIncomes();
+});
+
+/// Stream de todos los gastos.
+final allExpensesProvider = StreamProvider<List<Expense>>((ref) {
+  return ref.watch(expensesDaoProvider).watchAllExpenses();
+});
+
+/// Stream de todo el inventario.
+final allInventoryProvider = StreamProvider<List<InventoryWithProduct>>((ref) {
+  return ref.watch(inventoryDaoProvider).watchAllInventory();
 });
 
 /// Provider para obtener un cliente por su ID.

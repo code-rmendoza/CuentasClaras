@@ -35,12 +35,14 @@ class MonetizationState {
   }
 }
 
-class MonetizationNotifier extends StateNotifier<MonetizationState> {
-  final FlutterSecureStorage _storage;
-
-  MonetizationNotifier(this._storage) : super(const MonetizationState()) {
+class MonetizationNotifier extends Notifier<MonetizationState> {
+  @override
+  MonetizationState build() {
     _loadState();
+    return const MonetizationState();
   }
+
+  FlutterSecureStorage get _storage => ref.read(secureStorageProvider);
 
   Future<void> _loadState() async {
     final isProStr = await _storage.read(key: 'user_is_pro');
@@ -93,6 +95,5 @@ class MonetizationNotifier extends StateNotifier<MonetizationState> {
 }
 
 final monetizationProvider =
-    StateNotifierProvider<MonetizationNotifier, MonetizationState>((ref) {
-  return MonetizationNotifier(ref.watch(secureStorageProvider));
-});
+    NotifierProvider<MonetizationNotifier, MonetizationState>(
+        MonetizationNotifier.new);

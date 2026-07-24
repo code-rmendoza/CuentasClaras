@@ -7,7 +7,6 @@ import '../../core/theme/app_theme.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/utils/currency_utils.dart';
 import '../../core/utils/validators.dart';
-import '../../shared/providers/database_provider.dart';
 import '../../shared/providers/financial_providers.dart';
 import '../../shared/providers/settings_provider.dart';
 import '../../data/database/app_database.dart';

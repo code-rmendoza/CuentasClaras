@@ -6,11 +6,13 @@ import 'products_table.dart';
 ///
 /// Cada deuda registra un crédito otorgado por el comerciante
 /// a un cliente. Puede estar vinculada opcionalmente a un producto.
+/// NOTA IMPORTANTE: El campo [amount] almacena el monto en CENTAVOS enteros (ej: $10.50 -> 1050 centavos).
 @TableIndex(name: 'debts_client_idx', columns: {#clientId})
 @TableIndex(name: 'debts_is_paid_idx', columns: {#isPaid})
 class Debts extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get clientId => integer().references(Clients, #id)();
+  /// Monto total de la deuda expresado en centavos enteros (ej: 1050 = $10.50).
   IntColumn get amount => integer()();
   TextColumn get currency => text().withLength(min: 3, max: 3)();
   TextColumn get description => text().nullable().withLength(max: 200)();
@@ -19,3 +21,4 @@ class Debts extends Table {
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
+

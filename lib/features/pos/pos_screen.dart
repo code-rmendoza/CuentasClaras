@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart' as drift;
 import '../../core/theme/app_colors.dart';
+import '../../data/database/app_database.dart';
 import '../../shared/providers/business_profile_provider.dart';
+import '../../shared/providers/database_provider.dart';
 import '../../shared/widgets/ad_banner_widget.dart';
 import '../../shared/widgets/thermal_printer_dialog.dart';
 
@@ -44,13 +47,28 @@ class _PosScreenState extends ConsumerState<PosScreen> {
         (sum, item) => sum + ((item['price'] as double) * (item['qty'] as int)),
       );
 
-  void _checkout(String paymentMethod) {
+  void _checkout(String paymentMethod) async {
     if (_cart.isEmpty) return;
 
     final profile = ref.read(businessProfileProvider);
     final savedCart = List<Map<String, dynamic>>.from(_cart);
     final total = _cartTotal;
+    final totalCents = (total * 100).round();
     final ticketId = '${DateTime.now().millisecondsSinceEpoch}'.substring(5);
+    final pMethodCode = paymentMethod.toLowerCase().contains('efectivo') ? 'cash' : 'transfer';
+
+    // ── Persistencia Real en Drift SQLite ───────────────────
+    await ref.read(incomesDaoProvider).insertIncome(
+      IncomesCompanion.insert(
+        amount: totalCents,
+        currency: 'USD',
+        paymentMethod: pMethodCode,
+        description: 'Venta POS Express #$ticketId',
+        createdAt: drift.Value(DateTime.now()),
+      ),
+    );
+
+    if (!mounted) return;
 
     showDialog(
       context: context,
@@ -74,6 +92,11 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             Text('Total Cobrado: \$${total.toStringAsFixed(2)}'),
             const SizedBox(height: 4),
             Text('Método: $paymentMethod'),
+            const SizedBox(height: 8),
+            const Text(
+              '✓ Venta guardada exitosamente en la base de datos.',
+              style: TextStyle(fontSize: 11, color: AppColors.success, fontWeight: FontWeight.bold),
+            ),
             const SizedBox(height: 12),
             const Text(
               '¿Deseas imprimir el ticket en la impresora térmica Bluetooth o enviarlo por WhatsApp?',
@@ -108,11 +131,13 @@ class _PosScreenState extends ConsumerState<PosScreen> {
             onPressed: () {
               setState(() => _cart.clear());
               Navigator.pop(ctx);
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Abriendo WhatsApp con el ticket de venta...'),
-                ),
-              );
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Abriendo WhatsApp con el ticket de venta...'),
+                  ),
+                );
+              }
             },
             icon: const Icon(Icons.send_rounded, size: 18),
             label: const Text('WhatsApp'),

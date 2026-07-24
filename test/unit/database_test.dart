@@ -72,5 +72,40 @@ void main() {
       pending = await database.debtsDao.getPendingDebts();
       expect(pending.isEmpty, isTrue);
     });
+
+    test('Delete client removes debts and payments in cascade', () async {
+      // 1. Create client
+      final clientId = await database.clientsDao.insertClient(
+        ClientsCompanion.insert(name: 'Ana Lopez'),
+      );
+
+      // 2. Insert debt
+      final debtId = await database.debtsDao.insertDebt(
+        DebtsCompanion.insert(
+          clientId: clientId,
+          amount: 5000,
+          currency: 'USD',
+        ),
+      );
+
+      // 3. Insert payment
+      await database.paymentsDao.insertPaymentAndCheck(
+        PaymentsCompanion.insert(
+          debtId: debtId,
+          amount: 2000,
+          currency: 'USD',
+        ),
+      );
+
+      // 4. Delete client in cascade
+      await database.clientsDao.deleteClient(clientId);
+
+      // 5. Verify client, debt, and payments are deleted
+      final client = await database.clientsDao.getClientById(clientId);
+      expect(client, isNull);
+
+      final debts = await database.debtsDao.getDebtsByClient(clientId);
+      expect(debts.isEmpty, isTrue);
+    });
   });
 }

@@ -48,12 +48,14 @@ class BusinessProfile {
   }
 }
 
-class BusinessProfileNotifier extends StateNotifier<BusinessProfile> {
-  final FlutterSecureStorage _storage;
-
-  BusinessProfileNotifier(this._storage) : super(const BusinessProfile()) {
+class BusinessProfileNotifier extends Notifier<BusinessProfile> {
+  @override
+  BusinessProfile build() {
     _loadProfile();
+    return const BusinessProfile();
   }
+
+  FlutterSecureStorage get _storage => ref.read(secureStorageProvider);
 
   Future<void> _loadProfile() async {
     final typeId = await _storage.read(key: 'business_type_id');
@@ -115,6 +117,5 @@ class BusinessProfileNotifier extends StateNotifier<BusinessProfile> {
 }
 
 final businessProfileProvider =
-    StateNotifierProvider<BusinessProfileNotifier, BusinessProfile>((ref) {
-  return BusinessProfileNotifier(ref.watch(secureStorageProvider));
-});
+    NotifierProvider<BusinessProfileNotifier, BusinessProfile>(
+        BusinessProfileNotifier.new);

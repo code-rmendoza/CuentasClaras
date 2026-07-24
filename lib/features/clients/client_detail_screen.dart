@@ -107,10 +107,10 @@ class ClientDetailScreen extends ConsumerWidget {
   }
 
   Widget _buildSummarySection(BuildContext context, List<Debt> pending) {
-    // Agrupar por moneda
-    final totals = <String, double>{};
+    // Agrupar total en centavos por moneda
+    final totalsCents = <String, int>{};
     for (final debt in pending) {
-      totals[debt.currency] = (totals[debt.currency] ?? 0) + debt.amount;
+      totalsCents[debt.currency] = (totalsCents[debt.currency] ?? 0) + debt.amount;
     }
 
     return Container(
@@ -127,7 +127,7 @@ class ClientDetailScreen extends ConsumerWidget {
             style: TextStyle(color: Colors.white70, fontSize: 14),
           ),
           const SizedBox(height: 8),
-          if (totals.isEmpty)
+          if (totalsCents.isEmpty)
             const Text(
               '¡Sin deudas!',
               style: TextStyle(
@@ -137,11 +137,11 @@ class ClientDetailScreen extends ConsumerWidget {
               ),
             )
           else
-            ...totals.entries.map(
+            ...totalsCents.entries.map(
               (e) => Padding(
                 padding: const EdgeInsets.only(bottom: 4),
                 child: Text(
-                  CurrencyUtils.formatAmount(e.value, e.key),
+                  CurrencyUtils.formatCents(e.value, e.key),
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 24,

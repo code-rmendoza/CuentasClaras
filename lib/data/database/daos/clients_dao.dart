@@ -1,11 +1,13 @@
 import 'package:drift/drift.dart';
 import '../app_database.dart';
 import '../tables/clients_table.dart';
+import '../tables/debts_table.dart';
+import '../tables/payments_table.dart';
 
 part 'clients_dao.g.dart';
 
 /// DAO para operaciones CRUD de clientes.
-@DriftAccessor(tables: [Clients])
+@DriftAccessor(tables: [Clients, Debts, Payments])
 class ClientsDao extends DatabaseAccessor<AppDatabase>
     with _$ClientsDaoMixin {
   ClientsDao(super.db);
@@ -55,9 +57,25 @@ class ClientsDao extends DatabaseAccessor<AppDatabase>
     );
   }
 
-  /// Elimina un cliente por ID.
-  Future<int> deleteClient(int id) {
-    return (delete(clients)..where((t) => t.id.equals(id))).go();
+  /// Elimina un cliente por ID y en cascada todas sus deudas y pagos asociados.
+  Future<void> deleteClient(int id) {
+    return transaction(() async {
+      final clientDebts = await (select(attachedDatabase.debts)
+            ..where((d) => d.clientId.equals(id)))
+          .get();
+
+      for (final debt in clientDebts) {
+        await (delete(attachedDatabase.payments)
+              ..where((p) => p.debtId.equals(debt.id)))
+            .go();
+      }
+
+      await (delete(attachedDatabase.debts)
+            ..where((d) => d.clientId.equals(id)))
+          .go();
+
+      await (delete(clients)..where((c) => c.id.equals(id))).go();
+    });
   }
 
   /// Cuenta el total de clientes.

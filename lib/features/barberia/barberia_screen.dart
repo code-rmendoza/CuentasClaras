@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:drift/drift.dart' as drift;
 import '../../core/theme/app_colors.dart';
+import '../../data/database/app_database.dart';
 import '../../shared/providers/business_profile_provider.dart';
+import '../../shared/providers/database_provider.dart';
 import '../../shared/widgets/ad_banner_widget.dart';
 
 class BarberiaScreen extends ConsumerStatefulWidget {
@@ -12,28 +15,11 @@ class BarberiaScreen extends ConsumerStatefulWidget {
 }
 
 class _BarberiaScreenState extends ConsumerState<BarberiaScreen> {
-  final List<Map<String, dynamic>> _services = [
+  final List<Map<String, dynamic>> _fallbackServices = [
     {'name': 'Corte Clásico', 'price': 10.0, 'duration': '30 min'},
     {'name': 'Corte + Barba VIP', 'price': 18.0, 'duration': '45 min'},
     {'name': 'Perfilado de Barba', 'price': 8.0, 'duration': '20 min'},
     {'name': 'Tinte / Colorimetría', 'price': 25.0, 'duration': '60 min'},
-  ];
-
-  final List<Map<String, dynamic>> _todayAttentions = [
-    {
-      'client': 'Carlos Gómez',
-      'service': 'Corte + Barba VIP',
-      'price': 18.0,
-      'barber': 'Juan (Barbero 1)',
-      'time': '10:30 AM',
-    },
-    {
-      'client': 'Andrés Pérez',
-      'service': 'Corte Clásico',
-      'price': 10.0,
-      'barber': 'Juan (Barbero 1)',
-      'time': '11:15 AM',
-    },
   ];
 
   void _addServiceDialog() {
@@ -71,16 +57,17 @@ class _BarberiaScreenState extends ConsumerState<BarberiaScreen> {
             child: const Text('Cancelar'),
           ),
           ElevatedButton(
-            onPressed: () {
+            onPressed: () async {
               if (nameCtrl.text.isNotEmpty && priceCtrl.text.isNotEmpty) {
-                setState(() {
-                  _services.add({
-                    'name': nameCtrl.text,
-                    'price': double.tryParse(priceCtrl.text) ?? 10.0,
-                    'duration': '30 min',
-                  });
-                });
-                Navigator.pop(ctx);
+                final priceVal = double.tryParse(priceCtrl.text) ?? 10.0;
+                await ref.read(productsDaoProvider).insertProduct(
+                      ProductsCompanion.insert(
+                        name: nameCtrl.text,
+                        defaultPrice: (priceVal * 100).round(),
+                        currency: 'USD',
+                      ),
+                    );
+                if (ctx.mounted) Navigator.pop(ctx);
               }
             },
             child: const Text('Guardar'),
@@ -90,16 +77,51 @@ class _BarberiaScreenState extends ConsumerState<BarberiaScreen> {
     );
   }
 
+  Future<void> _registerAttention(String serviceName, double price) async {
+    final priceCents = (price * 100).round();
+    await ref.read(incomesDaoProvider).insertIncome(
+          IncomesCompanion.insert(
+            amount: priceCents,
+            currency: 'USD',
+            paymentMethod: 'cash',
+            description: 'Atención Barbería: $serviceName',
+            createdAt: drift.Value(DateTime.now()),
+          ),
+        );
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Atención de "$serviceName" registrada (\$${price.toStringAsFixed(2)})'),
+          backgroundColor: AppColors.success,
+        ),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final profile = ref.watch(businessProfileProvider);
     final commissionRate = profile.defaultCommissionRate;
+    final incomesAsync = ref.watch(allIncomesProvider);
+    final productsAsync = ref.watch(activeProductsProvider);
 
-    double totalToday = _todayAttentions.fold(
-      0.0,
-      (sum, item) => sum + (item['price'] as double),
+    // Filtrar atenciones de barbería ingresadas hoy
+    final now = DateTime.now();
+    final todayStart = DateTime(now.year, now.month, now.day);
+    final todayIncomes = incomesAsync.maybeWhen(
+      data: (list) => list.where((item) {
+        final inc = item.income;
+        return inc.description.contains('Barbería') && inc.createdAt.isAfter(todayStart);
+      }).toList(),
+      orElse: () => [],
     );
-    double totalCommission = totalToday * (commissionRate / 100);
+
+    final double totalToday = todayIncomes.fold(
+      0.0,
+      (sum, item) => sum + (item.income.amount / 100.0),
+    );
+    final double totalCommission = totalToday * (commissionRate / 100);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -193,9 +215,9 @@ class _BarberiaScreenState extends ConsumerState<BarberiaScreen> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        'Catálogo de Servicios',
+                        'Catálogo de Servicios (Toca para registrar)',
                         style: TextStyle(
-                          fontSize: 15,
+                          fontSize: 14,
                           fontWeight: FontWeight.bold,
                           color: AppColors.textPrimary,
                         ),
@@ -209,51 +231,76 @@ class _BarberiaScreenState extends ConsumerState<BarberiaScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  GridView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 2.2,
-                      crossAxisSpacing: 10,
-                      mainAxisSpacing: 10,
-                    ),
-                    itemCount: _services.length,
-                    itemBuilder: (context, index) {
-                      final item = _services[index];
-                      return Container(
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: AppColors.card,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: AppColors.border),
+                  productsAsync.when(
+                    data: (products) {
+                      final servicesList = products.isNotEmpty
+                          ? products
+                              .map((p) => {
+                                    'name': p.name,
+                                    'price': p.defaultPrice / 100.0,
+                                    'duration': 'Servicio',
+                                  })
+                              .toList()
+                          : _fallbackServices;
+
+                      return GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate:
+                            const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 2.2,
+                          crossAxisSpacing: 10,
+                          mainAxisSpacing: 10,
                         ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              item['name'],
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 13,
+                        itemCount: servicesList.length,
+                        itemBuilder: (context, index) {
+                          final item = servicesList[index];
+                          final name = item['name'] as String;
+                          final price = item['price'] as double;
+                          final duration = item['duration'] as String;
+
+                          return InkWell(
+                            onTap: () => _registerAttention(name, price),
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: AppColors.card,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: AppColors.border),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    name,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '\$${price.toStringAsFixed(2)} • $duration',
+                                    style: const TextStyle(
+                                      color: AppColors.primary,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(height: 4),
-                            Text(
-                              '\$${(item['price'] as double).toStringAsFixed(2)} • ${item['duration']}',
-                              style: const TextStyle(
-                                color: AppColors.primary,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 12,
-                              ),
-                            ),
-                          ],
-                        ),
+                          );
+                        },
                       );
                     },
+                    loading: () => const Center(child: CircularProgressIndicator()),
+                    error: (err, stack) => const SizedBox(),
                   ),
 
                   const SizedBox(height: 24),
@@ -269,34 +316,51 @@ class _BarberiaScreenState extends ConsumerState<BarberiaScreen> {
                   ),
                   const SizedBox(height: 8),
 
-                  ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    itemCount: _todayAttentions.length,
-                    itemBuilder: (context, index) {
-                      final att = _todayAttentions[index];
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: const CircleAvatar(
-                            backgroundColor: AppColors.primaryLight,
-                            child: Icon(Icons.content_cut_rounded,
-                                color: Colors.white, size: 20),
-                          ),
-                          title: Text(att['client']),
-                          subtitle: Text('${att['service']} • ${att['time']}'),
-                          trailing: Text(
-                            '\$${(att['price'] as double).toStringAsFixed(2)}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 14,
-                              color: AppColors.primary,
+                  if (todayIncomes.isEmpty)
+                    const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 16),
+                      child: Center(
+                        child: Text(
+                          'No hay atenciones registradas hoy. Toca un servicio arriba para agregar.',
+                          style: TextStyle(
+                              fontSize: 12, color: AppColors.textSecondary),
+                        ),
+                      ),
+                    )
+                  else
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: todayIncomes.length,
+                      itemBuilder: (context, index) {
+                        final item = todayIncomes[index];
+                        final inc = item.income;
+                        final price = inc.amount / 100.0;
+                        final timeStr =
+                            '${inc.createdAt.hour.toString().padLeft(2, '0')}:${inc.createdAt.minute.toString().padLeft(2, '0')}';
+
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          child: ListTile(
+                            leading: const CircleAvatar(
+                              backgroundColor: AppColors.primaryLight,
+                              child: Icon(Icons.content_cut_rounded,
+                                  color: Colors.white, size: 20),
+                            ),
+                            title: Text(inc.description ?? 'Atención Barbería'),
+                            subtitle: Text('Efectivo • $timeStr'),
+                            trailing: Text(
+                              '\$${price.toStringAsFixed(2)}',
+                              style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                                color: AppColors.primary,
+                              ),
                             ),
                           ),
-                        ),
-                      );
-                    },
-                  ),
+                        );
+                      },
+                    ),
                 ],
               ),
             ),

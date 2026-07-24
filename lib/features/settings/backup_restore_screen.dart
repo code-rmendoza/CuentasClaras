@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/services/google_drive_backup_service.dart';
 import '../../core/theme/app_colors.dart';
+import '../../shared/providers/database_provider.dart';
 import '../../shared/providers/monetization_provider.dart';
 
 class BackupRestoreScreen extends ConsumerStatefulWidget {
@@ -260,9 +261,22 @@ class _BackupRestoreScreenState extends ConsumerState<BackupRestoreScreen> {
   }
 
   Future<void> _processRestoreFile() async {
+    final activeDb = ref.read(databaseProvider);
     final dbFile = await _backupService.getDatabaseFile();
     if (await dbFile.exists()) {
-      final success = await _backupService.restoreFromBackup(dbFile.path);
+      final success = await _backupService.restoreFromBackup(
+        dbFile.path,
+        currentDb: activeDb,
+      );
+      if (success) {
+        ref.invalidate(databaseProvider);
+        ref.invalidate(allClientsProvider);
+        ref.invalidate(pendingDebtsProvider);
+        ref.invalidate(activeProductsProvider);
+        ref.invalidate(allIncomesProvider);
+        ref.invalidate(allExpensesProvider);
+        await _loadMetadata();
+      }
       if (mounted && success) {
         showDialog(
           context: context,

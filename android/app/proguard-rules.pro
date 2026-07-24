@@ -10,6 +10,14 @@
 # Drift / SQLite native rules
 -keep class com.simonbinder.sqlite3.** { *; }
 -keep class io.simonbinder.sqlite3.** { *; }
+-keep class net.sqlcipher.** { *; }
+-keepclassmembers class * extends package:drift/drift.dart { *; }
+
+# Flutter Secure Storage
+-keep class com.it_effekt.flutter_secure_storage.** { *; }
+
+# Share Plus & Path Provider
+-keep class dev.fluttercommunity.plus.share.** { *; }
 
 # Firebase rules
 -keep class com.google.firebase.** { *; }

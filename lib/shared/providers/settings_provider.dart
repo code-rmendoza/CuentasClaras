@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -32,12 +33,14 @@ class AppSettings {
 }
 
 /// Notifier para gestionar la configuración de la app.
-class SettingsNotifier extends StateNotifier<AppSettings> {
-  final FlutterSecureStorage _storage;
-
-  SettingsNotifier(this._storage) : super(const AppSettings()) {
+class SettingsNotifier extends Notifier<AppSettings> {
+  @override
+  AppSettings build() {
     _loadSettings();
+    return const AppSettings();
   }
+
+  FlutterSecureStorage get _storage => ref.read(secureStorageProvider);
 
   Future<void> _loadSettings() async {
     final currency = await _storage.read(key: 'default_currency');
@@ -79,8 +82,28 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     return salt;
   }
 
-  /// Deriva el hash SHA-256 del PIN concatenado con la sal.
+  /// Deriva el hash PBKDF2-HMAC-SHA256 del PIN con 10,000 iteraciones.
   String _hashPin(String pin, String salt) {
+    final passwordBytes = utf8.encode(pin);
+    final saltBytes = utf8.encode(salt);
+    final hmac = Hmac(sha256, passwordBytes);
+
+    final block = ByteData(4)..setUint32(0, 1, Endian.big);
+    List<int> u = hmac.convert([...saltBytes, ...block.buffer.asUint8List()]).bytes;
+    List<int> result = List<int>.from(u);
+
+    for (int i = 1; i < 10000; i++) {
+      u = hmac.convert(u).bytes;
+      for (int j = 0; j < result.length; j++) {
+        result[j] ^= u[j];
+      }
+    }
+
+    return base64.encode(result);
+  }
+
+  /// Hash legacy SHA-256 para soporte retrocompatible.
+  String _hashPinLegacy(String pin, String salt) {
     final bytes = utf8.encode('$pin:$salt');
     return sha256.convert(bytes).toString();
   }
@@ -91,7 +114,16 @@ class SettingsNotifier extends StateNotifier<AppSettings> {
     if (storedHash == null) return false;
     final salt = await _getOrCreateSalt();
     final computedHash = _hashPin(pin, salt);
-    return storedHash == computedHash;
+    if (storedHash == computedHash) return true;
+
+    // Migración automática si el usuario tenía un hash SHA-256 previo
+    final legacyHash = _hashPinLegacy(pin, salt);
+    if (storedHash == legacyHash) {
+      await setPin(pin);
+      return true;
+    }
+
+    return false;
   }
 
   /// Guarda un nuevo PIN almacenando únicamente el digest hash salteado.
@@ -128,6 +160,4 @@ final secureStorageProvider = Provider<FlutterSecureStorage>((ref) {
 
 /// Provider de configuración de la app.
 final settingsProvider =
-    StateNotifierProvider<SettingsNotifier, AppSettings>((ref) {
-  return SettingsNotifier(ref.watch(secureStorageProvider));
-});
+    NotifierProvider<SettingsNotifier, AppSettings>(SettingsNotifier.new);
