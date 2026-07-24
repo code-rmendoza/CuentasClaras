@@ -23,9 +23,9 @@ class RecentActivityItem extends StatelessWidget {
     return Container(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingSm),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: context.cardColor,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+        border: Border.all(color: context.borderColor, width: 1.0),
       ),
       child: Material(
         color: Colors.transparent,
@@ -36,22 +36,21 @@ class RecentActivityItem extends StatelessWidget {
             padding: const EdgeInsets.all(AppTheme.spacingMd),
             child: Row(
               children: [
-                // Avatar tonal minimalista
                 Container(
                   width: 40,
                   height: 40,
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLow,
+                    color: context.cardLowColor,
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                    border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+                    border: Border.all(color: context.borderColor, width: 1.0),
                   ),
                   child: Center(
                     child: Text(
                       client.name.isNotEmpty
                           ? client.name[0].toUpperCase()
                           : '?',
-                      style: const TextStyle(
-                        color: AppColors.textPrimary,
+                      style: TextStyle(
+                        color: context.primaryTextColor,
                         fontWeight: FontWeight.w600,
                         fontSize: 16,
                       ),
@@ -60,7 +59,6 @@ class RecentActivityItem extends StatelessWidget {
                 ),
                 const SizedBox(width: AppTheme.spacingMd),
 
-                // Nombre y fecha
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,6 +68,7 @@ class RecentActivityItem extends StatelessWidget {
                         style: Theme.of(context).textTheme.titleMedium?.copyWith(
                               fontSize: 15,
                               fontWeight: FontWeight.w600,
+                              color: context.primaryTextColor,
                             ),
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
@@ -84,12 +83,14 @@ class RecentActivityItem extends StatelessWidget {
                             size: 13,
                             color: debt.isPaid
                                 ? AppColors.success
-                                : AppColors.textTertiary,
+                                : context.tertiaryTextColor,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             app_date.DateUtils.formatRelative(debt.createdAt),
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                  color: context.secondaryTextColor,
+                                ),
                           ),
                           if (debt.description != null &&
                               debt.description!.isNotEmpty) ...[
@@ -97,7 +98,9 @@ class RecentActivityItem extends StatelessWidget {
                             Expanded(
                               child: Text(
                                 debt.description!,
-                                style: Theme.of(context).textTheme.bodySmall,
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: context.secondaryTextColor,
+                                    ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                               ),
@@ -109,7 +112,6 @@ class RecentActivityItem extends StatelessWidget {
                   ),
                 ),
 
-                // Monto
                 Text(
                   CurrencyUtils.formatCents(debt.amount, debt.currency),
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(

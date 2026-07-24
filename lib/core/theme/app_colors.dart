@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-/// Paleta de colores oficial de CuentasClaras extraída directamente del
+/// Paleta de colores oficial de CuentasClaras inspirada en el
 /// Design System "Precision Minimalist" generado en Stitch MCP.
 ///
-/// Principios: Minimalismo Funcional, jerarquía tipográfica, fondo neutro claro
-/// con contenedor acentuado en azul eléctrico (#0052FF / #003EC7).
+/// Soporta de forma limpia Modo Claro y Modo Oscuro.
 class AppColors {
   AppColors._();
 
@@ -22,7 +21,7 @@ class AppColors {
   static const Color secondaryLight = Color(0xFF95AAFE);
   static const Color onSecondary = Color(0xFFFFFFFF);
 
-  // ── Superficies & Contenedores (Clean Slate) ─────────────────
+  // ── Superficies & Contenedores (Modo Claro) ──────────────────
   static const Color background = Color(0xFFFBF8FF);
   static const Color surface = Color(0xFFFBF8FF);
   static const Color surfaceVariant = Color(0xFFF3F2FF);
@@ -33,7 +32,7 @@ class AppColors {
   static const Color surfaceContainerHighest = Color(0xFFE1E1EF);
   static const Color card = Color(0xFFFFFFFF);
 
-  // ── Texto & Contraste ───────────────────────────────────────
+  // ── Texto & Contraste (Modo Claro) ──────────────────────────
   static const Color onSurface = Color(0xFF191B25);        // Charcoal primary text
   static const Color onSurfaceVariant = Color(0xFF434656); // Slate secondary text
   static const Color textPrimary = Color(0xFF191B25);
@@ -41,7 +40,7 @@ class AppColors {
   static const Color textTertiary = Color(0xFF737688);
   static const Color textOnDark = Color(0xFFFFFFFF);
 
-  // ── Bordes & Líneas (1px Clean Grid) ─────────────────────────
+  // ── Bordes & Líneas (Modo Claro) ────────────────────────────
   static const Color outline = Color(0xFF737688);
   static const Color outlineVariant = Color(0xFFC3C5D9);     // Tonal 1px borders
   static const Color border = Color(0xFFC3C5D9);
@@ -84,10 +83,25 @@ class AppColors {
 
   // ── Dark Mode Precision ─────────────────────────────────────
   static const Color darkBackground = Color(0xFF191B25);
-  static const Color darkSurface = Color(0xFF2E303A);
-  static const Color darkSurfaceVariant = Color(0xFF434656);
+  static const Color darkSurface = Color(0xFF191B25);
+  static const Color darkSurfaceVariant = Color(0xFF252733);
   static const Color darkCard = Color(0xFF2E303A);
+  static const Color darkCardLow = Color(0xFF252733);
   static const Color darkBorder = Color(0xFF434656);
   static const Color darkTextPrimary = Color(0xFFF0EFFE);
   static const Color darkTextSecondary = Color(0xFFC3C5D9);
+  static const Color darkTextTertiary = Color(0xFF8E92A6);
+}
+
+/// Helper para obtener colores dinámicos adaptados al tema actual (Claro u Oscuro).
+extension AppThemeColors on BuildContext {
+  bool get isDarkMode => Theme.of(this).brightness == Brightness.dark;
+
+  Color get surfaceColor => isDarkMode ? AppColors.darkSurface : AppColors.surface;
+  Color get cardColor => isDarkMode ? AppColors.darkCard : AppColors.surfaceContainerLowest;
+  Color get cardLowColor => isDarkMode ? AppColors.darkCardLow : AppColors.surfaceContainerLow;
+  Color get primaryTextColor => isDarkMode ? AppColors.darkTextPrimary : AppColors.textPrimary;
+  Color get secondaryTextColor => isDarkMode ? AppColors.darkTextSecondary : AppColors.textSecondary;
+  Color get tertiaryTextColor => isDarkMode ? AppColors.darkTextTertiary : AppColors.textTertiary;
+  Color get borderColor => isDarkMode ? AppColors.darkBorder : AppColors.outlineVariant;
 }

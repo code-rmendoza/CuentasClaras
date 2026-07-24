@@ -6,8 +6,7 @@ import '../../core/theme/app_colors.dart';
 
 /// Widget de Banner Publicitario compatible con AdMob / Modo Libre.
 ///
-/// Si el usuario es PRO, el widget retorna un SizedBox.shrink() sin consumir espacio.
-/// Si es usuario Free, muestra un espacio publicitario optimizado con opción de remover anuncios.
+/// Adaptado a Modo Claro y Modo Oscuro.
 class AdBannerWidget extends ConsumerWidget {
   const AdBannerWidget({super.key});
 
@@ -19,26 +18,28 @@ class AdBannerWidget extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = context.cardColor;
+    final borderColor = context.borderColor;
+    final primaryText = context.primaryTextColor;
+    final secondaryText = context.secondaryTextColor;
+
     return Container(
       width: double.infinity,
       height: 60,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            AppColors.surfaceVariant,
-            AppColors.surface,
-          ],
-        ),
-        borderRadius: BorderRadius.circular(12),
+        color: cardBg,
+        borderRadius: BorderRadius.circular(8),
         border: Border.all(
-          color: AppColors.primary.withValues(alpha: 0.2),
+          color: borderColor,
+          width: 1.0,
         ),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           onTap: () => context.push('/pro-upgrade'),
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -47,12 +48,12 @@ class AdBannerWidget extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(6),
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: (isDark ? AppColors.primaryLight : AppColors.primaryContainer).withValues(alpha: 0.15),
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.star_rounded,
-                    color: AppColors.primary,
+                    color: isDark ? AppColors.primaryLight : AppColors.primaryContainer,
                     size: 20,
                   ),
                 ),
@@ -62,35 +63,34 @@ class AdBannerWidget extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text(
+                      Text(
                         'Publicidad CuentasClaras',
                         style: TextStyle(
                           fontSize: 12,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
+                          fontWeight: FontWeight.w600,
+                          color: primaryText,
                         ),
                       ),
                       Text(
                         'Desbloquea la versión PRO sin anuncios',
                         style: TextStyle(
                           fontSize: 10,
-                          color: AppColors.textSecondary,
+                          color: secondaryText,
                         ),
                       ),
                     ],
                   ),
                 ),
                 Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                   decoration: BoxDecoration(
-                    color: AppColors.primary,
-                    borderRadius: BorderRadius.circular(20),
+                    color: isDark ? AppColors.primaryLight : AppColors.primaryContainer,
+                    borderRadius: BorderRadius.circular(4),
                   ),
-                  child: const Text(
+                  child: Text(
                     'PRO',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: isDark ? AppColors.darkSurface : Colors.white,
                       fontSize: 10,
                       fontWeight: FontWeight.bold,
                     ),

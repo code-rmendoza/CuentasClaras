@@ -16,11 +16,10 @@ import 'widgets/recent_activity.dart';
 
 /// Pantalla Principal (Dashboard) de CuentasClaras.
 ///
-/// Reconstruida bajo la filosofía "Precision Minimalist" de Stitch MCP:
-/// - Tipografía limpia y estructurada
-/// - Espaciado estricto en grilla de 8px
-/// - Paleta neutra limpia con acento azul eléctrico (#0052FF)
-/// - Contenedores tonales planos con bordes finos de 1px (sin sombras pesadas)
+/// Refactorizada bajo la filosofía "Precision Minimalist" de Stitch MCP:
+/// - Pinned SliverAppBar que protege la barra de estado del sistema al hacer scroll
+/// - Soporte de tema adaptativo limpio 100% compatible con Modo Claro y Modo Oscuro
+/// - Grilla estricta de 8px y bordes tonales de 1px
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -31,98 +30,114 @@ class HomeScreen extends ConsumerWidget {
     final profile = ref.watch(businessProfileProvider);
     final monetization = ref.watch(monetizationProvider);
 
+    final isDark = context.isDarkMode;
+    final scaffoldBg = Theme.of(context).scaffoldBackgroundColor;
+    final cardLowBg = context.cardLowColor;
+    final primaryText = context.primaryTextColor;
+    final secondaryText = context.secondaryTextColor;
+    final borderColor = context.borderColor;
+
     return Scaffold(
-      backgroundColor: AppColors.background,
+      backgroundColor: scaffoldBg,
       body: CustomScrollView(
         slivers: [
-          // ── Header Minimalista Superior ───────────────────────────────────
-          SliverToBoxAdapter(
-            child: SafeArea(
-              bottom: false,
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacingMd,
-                  vertical: AppTheme.spacingMd,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              profile.businessName,
-                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 22,
-                                  ),
-                            ),
-                            const SizedBox(height: 2),
-                            Text(
-                              'CuentasClaras • Dashboard',
-                              style: Theme.of(context).textTheme.bodySmall,
-                            ),
-                          ],
+          // ── Pinned App Bar para proteger la barra de estado del teléfono al hacer scroll ──
+          SliverAppBar(
+            pinned: true,
+            elevation: 0,
+            scrolledUnderElevation: 0,
+            backgroundColor: scaffoldBg,
+            surfaceTintColor: Colors.transparent,
+            automaticallyImplyLeading: false,
+            toolbarHeight: 64,
+            title: Padding(
+              padding: const EdgeInsets.only(top: 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        profile.businessName,
+                        style: TextStyle(
+                          color: primaryText,
+                          fontWeight: FontWeight.w700,
+                          fontSize: 20,
+                          fontFamily: 'Geist',
                         ),
+                      ),
+                      Text(
+                        'CuentasClaras • Dashboard',
+                        style: TextStyle(
+                          color: secondaryText,
+                          fontSize: 12,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
 
-                        // Selector de Rubro Minimalista
-                        InkWell(
-                          onTap: () => context.push('/onboarding'),
-                          borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: AppTheme.spacingSm,
-                              vertical: AppTheme.spacingXs,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLow,
-                              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
-                              border: Border.all(
-                                color: AppColors.outlineVariant,
-                                width: 1.0,
-                              ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  profile.businessType.icon,
-                                  color: AppColors.primaryContainer,
-                                  size: 15,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  profile.businessType.label.split(' ')[0],
-                                  style: const TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                                const Icon(
-                                  Icons.keyboard_arrow_down_rounded,
-                                  color: AppColors.textSecondary,
-                                  size: 16,
-                                ),
-                              ],
+                  // Selector de Rubro Minimalista
+                  InkWell(
+                    onTap: () => context.push('/onboarding'),
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: AppTheme.spacingSm,
+                        vertical: AppTheme.spacingXs,
+                      ),
+                      decoration: BoxDecoration(
+                        color: cardLowBg,
+                        borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                        border: Border.all(
+                          color: borderColor,
+                          width: 1.0,
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            profile.businessType.icon,
+                            color: isDark ? AppColors.primaryLight : AppColors.primaryContainer,
+                            size: 15,
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            profile.businessType.label.split(' ')[0],
+                            style: TextStyle(
+                              color: primaryText,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w500,
                             ),
                           ),
-                        ),
-                      ],
+                          Icon(
+                            Icons.keyboard_arrow_down_rounded,
+                            color: secondaryText,
+                            size: 16,
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: AppTheme.spacingLg),
+                  ),
+                ],
+              ),
+            ),
+          ),
 
-                    // Tarjeta Principal de Balance (Hero Card Minimalista)
-                    totalByCurrency.when(
-                      data: (totals) => _buildHeroBalanceCard(context, totals),
-                      loading: () => const SizedBox.shrink(),
-                      error: (_, _) => const SizedBox.shrink(),
-                    ),
-                  ],
-                ),
+          // ── Hero Card de Balance Principal ────────────────────────────────
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingMd,
+                vertical: AppTheme.spacingSm,
+              ),
+              child: totalByCurrency.when(
+                data: (totals) => _buildHeroBalanceCard(context, totals),
+                loading: () => const SizedBox.shrink(),
+                error: (_, _) => const SizedBox.shrink(),
               ),
             ),
           ),
@@ -144,7 +159,11 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Text(
                         'Acciones Rápidas',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: primaryText,
+                        ),
                       ),
                       if (!monetization.isPro)
                         GestureDetector(
@@ -155,8 +174,14 @@ class HomeScreen extends ConsumerWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: AppColors.warningLight,
+                              color: isDark
+                                  ? AppColors.warning.withValues(alpha: 0.2)
+                                  : AppColors.warningLight,
                               borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                              border: Border.all(
+                                color: AppColors.warning.withValues(alpha: 0.3),
+                                width: 1.0,
+                              ),
                             ),
                             child: const Text(
                               '★ PRO',
@@ -179,7 +204,7 @@ class HomeScreen extends ConsumerWidget {
                           title: 'POS Express',
                           subtitle: 'Venta 2-clicks',
                           icon: Icons.point_of_sale_rounded,
-                          accentColor: AppColors.primaryContainer,
+                          accentColor: isDark ? AppColors.primaryLight : AppColors.primaryContainer,
                           onTap: () => context.push('/pos'),
                         ),
                       ),
@@ -220,7 +245,7 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Resumen por Moneda (si existen varias) ────────────────────────
+          // ── Resumen por Moneda ─────────────────────────────────────────────
           SliverToBoxAdapter(
             child: totalByCurrency.when(
               data: (totals) {
@@ -234,7 +259,11 @@ class HomeScreen extends ConsumerWidget {
                     children: [
                       Text(
                         'Desglose por Moneda',
-                        style: Theme.of(context).textTheme.titleMedium,
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: primaryText,
+                        ),
                       ),
                       const SizedBox(height: AppTheme.spacingSm),
                       ...totals.entries.map(
@@ -264,7 +293,11 @@ class HomeScreen extends ConsumerWidget {
                 children: [
                   Text(
                     'Actividad Reciente',
-                    style: Theme.of(context).textTheme.titleMedium,
+                    style: TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
+                      color: primaryText,
+                    ),
                   ),
                   const SizedBox(height: AppTheme.spacingSm),
                 ],
@@ -287,28 +320,35 @@ class HomeScreen extends ConsumerWidget {
                           Container(
                             padding: const EdgeInsets.all(AppTheme.spacingMd),
                             decoration: BoxDecoration(
-                              color: AppColors.surfaceContainerLow,
+                              color: cardLowBg,
                               borderRadius: BorderRadius.circular(AppTheme.radiusMd),
                               border: Border.all(
-                                color: AppColors.outlineVariant,
+                                color: borderColor,
                                 width: 1.0,
                               ),
                             ),
-                            child: const Icon(
+                            child: Icon(
                               Icons.check_circle_outline,
                               size: 40,
-                              color: AppColors.primaryContainer,
+                              color: isDark ? AppColors.primaryLight : AppColors.primaryContainer,
                             ),
                           ),
                           const SizedBox(height: AppTheme.spacingMd),
                           Text(
                             'Sin cuentas pendientes',
-                            style: Theme.of(context).textTheme.titleMedium,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: primaryText,
+                            ),
                           ),
                           const SizedBox(height: AppTheme.spacingXs),
                           Text(
                             'Registra tu primera venta o fiado para comenzar',
-                            style: Theme.of(context).textTheme.bodySmall,
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: secondaryText,
+                            ),
                             textAlign: TextAlign.center,
                           ),
                         ],
@@ -362,14 +402,19 @@ class HomeScreen extends ConsumerWidget {
       BuildContext context, Map<String, double> totals) {
     final hasDebts = totals.isNotEmpty;
     final mainEntry = hasDebts ? totals.entries.first : null;
+    final isDark = context.isDarkMode;
+    final cardBg = context.cardColor;
+    final primaryText = context.primaryTextColor;
+    final secondaryText = context.secondaryTextColor;
+    final borderColor = context.borderColor;
 
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.all(AppTheme.spacingLg),
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: cardBg,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+        border: Border.all(color: borderColor, width: 1.0),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -379,16 +424,18 @@ class HomeScreen extends ConsumerWidget {
             children: [
               Text(
                 'TOTAL POR COBRAR',
-                style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                      letterSpacing: 1.0,
-                    ),
+                style: TextStyle(
+                  color: secondaryText,
+                  letterSpacing: 1.0,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
               Container(
                 width: 8,
                 height: 8,
-                decoration: const BoxDecoration(
-                  color: AppColors.primaryContainer,
+                decoration: BoxDecoration(
+                  color: isDark ? AppColors.primaryLight : AppColors.primaryContainer,
                   shape: BoxShape.circle,
                 ),
               ),
@@ -399,18 +446,22 @@ class HomeScreen extends ConsumerWidget {
             mainEntry != null
                 ? CurrencyUtils.formatAmount(mainEntry.value, mainEntry.key)
                 : '\$0.00',
-            style: Theme.of(context).textTheme.displayLarge?.copyWith(
-                  fontSize: 36,
-                  color: AppColors.textPrimary,
-                  fontWeight: FontWeight.w600,
-                ),
+            style: TextStyle(
+              fontSize: 36,
+              color: primaryText,
+              fontWeight: FontWeight.w600,
+              fontFamily: 'Geist',
+            ),
           ),
           const SizedBox(height: AppTheme.spacingXs),
           Text(
             hasDebts
                 ? '${totals.length} moneda(s) registrada(s)'
                 : 'Todas las cuentas están al día',
-            style: Theme.of(context).textTheme.bodySmall,
+            style: TextStyle(
+              color: secondaryText,
+              fontSize: 13,
+            ),
           ),
         ],
       ),
@@ -425,11 +476,17 @@ class HomeScreen extends ConsumerWidget {
     required Color accentColor,
     required VoidCallback onTap,
   }) {
+    final cardBg = context.cardColor;
+    final cardLowBg = context.cardLowColor;
+    final primaryText = context.primaryTextColor;
+    final secondaryText = context.secondaryTextColor;
+    final borderColor = context.borderColor;
+
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.surfaceContainerLowest,
+        color: cardBg,
         borderRadius: BorderRadius.circular(AppTheme.radiusMd),
-        border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+        border: Border.all(color: borderColor, width: 1.0),
       ),
       child: Material(
         color: Colors.transparent,
@@ -443,10 +500,10 @@ class HomeScreen extends ConsumerWidget {
                 Container(
                   padding: const EdgeInsets.all(AppTheme.spacingSm),
                   decoration: BoxDecoration(
-                    color: AppColors.surfaceContainerLow,
+                    color: cardLowBg,
                     borderRadius: BorderRadius.circular(AppTheme.radiusSm),
                     border: Border.all(
-                      color: AppColors.outlineVariant,
+                      color: borderColor,
                       width: 1.0,
                     ),
                   ),
@@ -461,10 +518,10 @@ class HomeScreen extends ConsumerWidget {
                         title,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 13,
-                          color: AppColors.textPrimary,
+                          color: primaryText,
                         ),
                       ),
                       const SizedBox(height: 2),
@@ -472,9 +529,9 @@ class HomeScreen extends ConsumerWidget {
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 11,
-                          color: AppColors.textSecondary,
+                          color: secondaryText,
                         ),
                       ),
                     ],
@@ -489,6 +546,8 @@ class HomeScreen extends ConsumerWidget {
   }
 
   Widget _buildRubroModuleTile(BuildContext context, dynamic businessType) {
+    final accent = context.isDarkMode ? AppColors.primaryLight : AppColors.primaryContainer;
+
     switch (businessType.id) {
       case 'barberia':
         return _buildActionTile(
@@ -496,7 +555,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Servicios',
           subtitle: 'Comisiones barbería',
           icon: Icons.content_cut_rounded,
-          accentColor: AppColors.primaryContainer,
+          accentColor: accent,
           onTap: () => context.push('/barberia'),
         );
       case 'reposteria':
@@ -505,7 +564,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Costeos',
           subtitle: 'Recetas e insumos',
           icon: Icons.cake_rounded,
-          accentColor: AppColors.primaryContainer,
+          accentColor: accent,
           onTap: () => context.push('/reposteria'),
         );
       case 'inmobiliaria':
@@ -514,7 +573,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Propiedades',
           subtitle: 'Inmuebles y comisiones',
           icon: Icons.home_work_rounded,
-          accentColor: AppColors.primaryContainer,
+          accentColor: accent,
           onTap: () => context.push('/inmobiliaria'),
         );
       default:
@@ -523,7 +582,7 @@ class HomeScreen extends ConsumerWidget {
           title: 'Productos',
           subtitle: 'Inventario y stock',
           icon: Icons.inventory_2_outlined,
-          accentColor: AppColors.primaryContainer,
+          accentColor: accent,
           onTap: () => context.push(AppRouter.products),
         );
     }
