@@ -11,7 +11,8 @@
 -keep class com.simonbinder.sqlite3.** { *; }
 -keep class io.simonbinder.sqlite3.** { *; }
 -keep class net.sqlcipher.** { *; }
--keepclassmembers class * extends package:drift/drift.dart { *; }
+-keep class **.drift.** { *; }
+-keep class * extends **.GeneratedDatabase { *; }
 
 # Flutter Secure Storage
 -keep class com.it_effekt.flutter_secure_storage.** { *; }

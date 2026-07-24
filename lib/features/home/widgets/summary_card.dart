@@ -4,7 +4,7 @@ import '../../../core/theme/app_theme.dart';
 import '../../../core/utils/currency_utils.dart';
 import '../../../core/constants/app_constants.dart';
 
-/// Tarjeta de resumen de deudas por moneda.
+/// Tarjeta de resumen de deudas por moneda (Stitch Precision Minimalist).
 class SummaryCard extends StatelessWidget {
   final String currency;
   final double total;
@@ -17,59 +17,65 @@ class SummaryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    return Container(
       margin: const EdgeInsets.only(bottom: AppTheme.spacingSm),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(AppTheme.spacingMd),
         child: Row(
           children: [
-            // Ícono de moneda
+            // Contenedor tonal de moneda (sin sombras ni gradientes pesados)
             Container(
-              width: 48,
-              height: 48,
+              width: 44,
+              height: 44,
               decoration: BoxDecoration(
-                gradient: AppColors.debtGradient,
-                borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                color: AppColors.surfaceContainerLow,
+                borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                border: Border.all(color: AppColors.outlineVariant, width: 1.0),
               ),
               child: Center(
                 child: Text(
                   AppConstants.currencySymbols[currency] ?? currency,
                   style: const TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.w700,
-                    fontSize: 16,
+                    color: AppColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
                   ),
                 ),
               ),
             ),
             const SizedBox(width: AppTheme.spacingMd),
 
-            // Info
+            // Información
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     AppConstants.currencyNames[currency] ?? currency,
-                    style: Theme.of(context).textTheme.bodySmall,
+                    style: Theme.of(context).textTheme.labelMedium,
                   ),
                   const SizedBox(height: 2),
                   Text(
                     CurrencyUtils.formatAmount(total, currency),
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
                           color: AppColors.error,
-                          fontWeight: FontWeight.w700,
+                          fontWeight: FontWeight.w600,
                         ),
                   ),
                 ],
               ),
             ),
 
-            // Indicador
+            // Indicador minimalista
             const Icon(
-              Icons.trending_up,
+              Icons.arrow_upward_rounded,
               color: AppColors.error,
-              size: 20,
+              size: 18,
             ),
           ],
         ),

@@ -14,7 +14,13 @@ import '../../shared/widgets/ad_banner_widget.dart';
 import 'widgets/summary_card.dart';
 import 'widgets/recent_activity.dart';
 
-/// Pantalla principal (Dashboard) de CuentasClaras Mini ERP Lite.
+/// Pantalla Principal (Dashboard) de CuentasClaras.
+///
+/// Reconstruida bajo la filosofía "Precision Minimalist" de Stitch MCP:
+/// - Tipografía limpia y estructurada
+/// - Espaciado estricto en grilla de 8px
+/// - Paleta neutra limpia con acento azul eléctrico (#0052FF)
+/// - Contenedores tonales planos con bordes finos de 1px (sin sombras pesadas)
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
@@ -26,120 +32,107 @@ class HomeScreen extends ConsumerWidget {
     final monetization = ref.watch(monetizationProvider);
 
     return Scaffold(
+      backgroundColor: AppColors.background,
       body: CustomScrollView(
         slivers: [
-          // ── App Bar con Gradiente y Badge de Rubro ─────────────────────────
-          SliverAppBar(
-            expandedHeight: 210,
-            pinned: true,
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      profile.businessType.primaryColor,
-                      AppColors.secondary,
-                    ],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
+          // ── Header Minimalista Superior ───────────────────────────────────
+          SliverToBoxAdapter(
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacingMd,
+                  vertical: AppTheme.spacingMd,
                 ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppTheme.spacingMd),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.end,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  profile.businessName,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .titleLarge
-                                      ?.copyWith(
-                                        color: Colors.white,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                ),
-                                Text(
-                                  'CuentasClaras Mini ERP',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodySmall
-                                      ?.copyWith(color: Colors.white70),
-                                ),
-                              ],
+                            Text(
+                              profile.businessName,
+                              style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 22,
+                                  ),
                             ),
-
-                            // Chip Seleccionador de Rubro
-                            InkWell(
-                              onTap: () => context.push('/onboarding'),
-                              borderRadius: BorderRadius.circular(20),
-                              child: Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 10,
-                                  vertical: 4,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Colors.white24,
-                                  borderRadius: BorderRadius.circular(20),
-                                  border: Border.all(color: Colors.white54),
-                                ),
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      profile.businessType.icon,
-                                      color: Colors.white,
-                                      size: 16,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      profile.businessType.label.split(' ')[0],
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 11,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    const Icon(
-                                      Icons.arrow_drop_down_rounded,
-                                      color: Colors.white,
-                                      size: 18,
-                                    ),
-                                  ],
-                                ),
-                              ),
+                            const SizedBox(height: 2),
+                            Text(
+                              'CuentasClaras • Dashboard',
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
-                        // Total adeudado
-                        totalByCurrency.when(
-                          data: (totals) => _buildTotalSummary(context, totals),
-                          loading: () => const SizedBox.shrink(),
-                          error: (_, _) => const SizedBox.shrink(),
+
+                        // Selector de Rubro Minimalista
+                        InkWell(
+                          onTap: () => context.push('/onboarding'),
+                          borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacingSm,
+                              vertical: AppTheme.spacingXs,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                              border: Border.all(
+                                color: AppColors.outlineVariant,
+                                width: 1.0,
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  profile.businessType.icon,
+                                  color: AppColors.primaryContainer,
+                                  size: 15,
+                                ),
+                                const SizedBox(width: 6),
+                                Text(
+                                  profile.businessType.label.split(' ')[0],
+                                  style: const TextStyle(
+                                    color: AppColors.textPrimary,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const Icon(
+                                  Icons.keyboard_arrow_down_rounded,
+                                  color: AppColors.textSecondary,
+                                  size: 16,
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
+                    const SizedBox(height: AppTheme.spacingLg),
+
+                    // Tarjeta Principal de Balance (Hero Card Minimalista)
+                    totalByCurrency.when(
+                      data: (totals) => _buildHeroBalanceCard(context, totals),
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, _) => const SizedBox.shrink(),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
 
-          // ── Banner Publicitario AdMob para usuarios Free ─────────────────
+          // ── Banner Publicitario AdMob ──────────────────────────────────────
           const SliverToBoxAdapter(
             child: AdBannerWidget(),
           ),
 
-          // ── Acciones Rápidas Específicas por Rubro ────────────────────────
+          // ── Módulos Rápidos ───────────────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(AppTheme.spacingMd),
@@ -149,70 +142,74 @@ class HomeScreen extends ConsumerWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Módulos Rápidos',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+                      Text(
+                        'Acciones Rápidas',
+                        style: Theme.of(context).textTheme.titleMedium,
                       ),
                       if (!monetization.isPro)
                         GestureDetector(
                           onTap: () => context.push('/pro-upgrade'),
-                          child: const Text(
-                            '★ Activar PRO',
-                            style: TextStyle(
-                              color: Colors.amber,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 12,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppTheme.spacingSm,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.warningLight,
+                              borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                            ),
+                            child: const Text(
+                              '★ PRO',
+                              style: TextStyle(
+                                color: AppColors.warning,
+                                fontWeight: FontWeight.w600,
+                                fontSize: 11,
+                              ),
                             ),
                           ),
                         ),
                     ],
                   ),
-                  const SizedBox(height: 12),
+                  const SizedBox(height: AppTheme.spacingSm),
                   Row(
                     children: [
-                      // POS Express Button
                       Expanded(
                         child: _buildActionTile(
                           context,
                           title: 'POS Express',
-                          subtitle: 'Venta rápida 2-clicks',
+                          subtitle: 'Venta 2-clicks',
                           icon: Icons.point_of_sale_rounded,
-                          color: AppColors.primary,
+                          accentColor: AppColors.primaryContainer,
                           onTap: () => context.push('/pos'),
                         ),
                       ),
-                      const SizedBox(width: 10),
-                      // Rubro Specific Button
+                      const SizedBox(width: AppTheme.spacingSm),
                       Expanded(
                         child: _buildRubroModuleTile(context, profile.businessType),
                       ),
                     ],
                   ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: AppTheme.spacingSm),
                   Row(
                     children: [
                       Expanded(
                         child: _buildActionTile(
                           context,
                           title: 'Registrar Fiado',
-                          subtitle: 'Cuentas por cobrar',
+                          subtitle: 'Por cobrar',
                           icon: Icons.add_circle_outline_rounded,
-                          color: AppColors.error,
+                          accentColor: AppColors.error,
                           onTap: () => context.push(AppRouter.registerDebt),
                         ),
                       ),
-                      const SizedBox(width: 10),
+                      const SizedBox(width: AppTheme.spacingSm),
                       Expanded(
                         child: _buildActionTile(
                           context,
                           title: 'Registrar Abono',
                           subtitle: 'Cobrar deuda',
-                          icon: Icons.price_check_rounded,
-                          color: AppColors.secondary,
+                          icon: Icons.payments_outlined,
+                          accentColor: AppColors.success,
                           onTap: () => context.push(AppRouter.registerPayment),
                         ),
                       ),
@@ -223,11 +220,11 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Resumen por Moneda ────────────────────────────
+          // ── Resumen por Moneda (si existen varias) ────────────────────────
           SliverToBoxAdapter(
             child: totalByCurrency.when(
               data: (totals) {
-                if (totals.isEmpty) return const SizedBox.shrink();
+                if (totals.length <= 1) return const SizedBox.shrink();
                 return Padding(
                   padding: const EdgeInsets.symmetric(
                     horizontal: AppTheme.spacingMd,
@@ -236,7 +233,7 @@ class HomeScreen extends ConsumerWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Balance por moneda',
+                        'Desglose por Moneda',
                         style: Theme.of(context).textTheme.titleMedium,
                       ),
                       const SizedBox(height: AppTheme.spacingSm),
@@ -251,17 +248,14 @@ class HomeScreen extends ConsumerWidget {
                 );
               },
               loading: () => const Padding(
-                padding: EdgeInsets.all(32),
+                padding: EdgeInsets.all(AppTheme.spacingLg),
                 child: LoadingIndicator(),
               ),
-              error: (e, _) => Padding(
-                padding: const EdgeInsets.all(16),
-                child: Text('Error: $e'),
-              ),
+              error: (e, _) => const SizedBox.shrink(),
             ),
           ),
 
-          // ── Actividad Reciente ────────────────────────────
+          // ── Título Actividad Reciente ──────────────────────────────────────
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(AppTheme.spacingMd),
@@ -269,7 +263,7 @@ class HomeScreen extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Actividad reciente',
+                    'Actividad Reciente',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                   const SizedBox(height: AppTheme.spacingSm),
@@ -278,35 +272,44 @@ class HomeScreen extends ConsumerWidget {
             ),
           ),
 
-          // ── Lista de Deudas Recientes ─────────────────────
+          // ── Lista de Deudas/Cuentas Recientes ─────────────────────────────
           pendingDebts.when(
             data: (debts) {
               if (debts.isEmpty) {
-                return const SliverFillRemaining(
+                return SliverFillRemaining(
                   hasScrollBody: false,
                   child: Center(
                     child: Padding(
-                      padding: EdgeInsets.all(32),
+                      padding: const EdgeInsets.all(AppTheme.spacingXl),
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(
-                            Icons.check_circle_outline,
-                            size: 64,
-                            color: AppColors.primary,
-                          ),
-                          SizedBox(height: 16),
-                          Text(
-                            '¡Sin cuentas pendientes!',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.w600,
+                          Container(
+                            padding: const EdgeInsets.all(AppTheme.spacingMd),
+                            decoration: BoxDecoration(
+                              color: AppColors.surfaceContainerLow,
+                              borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+                              border: Border.all(
+                                color: AppColors.outlineVariant,
+                                width: 1.0,
+                              ),
+                            ),
+                            child: const Icon(
+                              Icons.check_circle_outline,
+                              size: 40,
+                              color: AppColors.primaryContainer,
                             ),
                           ),
-                          SizedBox(height: 8),
+                          const SizedBox(height: AppTheme.spacingMd),
+                          Text(
+                            'Sin cuentas pendientes',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: AppTheme.spacingXs),
                           Text(
                             'Registra tu primera venta o fiado para comenzar',
-                            style: TextStyle(color: AppColors.textSecondary),
+                            style: Theme.of(context).textTheme.bodySmall,
+                            textAlign: TextAlign.center,
                           ),
                         ],
                       ),
@@ -316,8 +319,9 @@ class HomeScreen extends ConsumerWidget {
               }
 
               return SliverPadding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: AppTheme.spacingMd),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: AppTheme.spacingMd,
+                ),
                 sliver: SliverList(
                   delegate: SliverChildBuilderDelegate(
                     (context, index) {
@@ -332,7 +336,7 @@ class HomeScreen extends ConsumerWidget {
               );
             },
             loading: () => const SliverFillRemaining(
-              child: LoadingIndicator(message: 'Cargando...'),
+              child: LoadingIndicator(message: 'Cargando datos...'),
             ),
             error: (e, _) => SliverFillRemaining(
               child: Center(child: Text('Error: $e')),
@@ -347,9 +351,68 @@ class HomeScreen extends ConsumerWidget {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push(AppRouter.registerDebt),
-        icon: const Icon(Icons.add),
-        label: const Text('Nuevo Registrero'),
+        icon: const Icon(Icons.add_rounded, size: 20),
+        label: const Text('Nuevo Fiado'),
         heroTag: 'fab_home',
+      ),
+    );
+  }
+
+  Widget _buildHeroBalanceCard(
+      BuildContext context, Map<String, double> totals) {
+    final hasDebts = totals.isNotEmpty;
+    final mainEntry = hasDebts ? totals.entries.first : null;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(AppTheme.spacingLg),
+      decoration: BoxDecoration(
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppColors.outlineVariant, width: 1.0),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'TOTAL POR COBRAR',
+                style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                      letterSpacing: 1.0,
+                    ),
+              ),
+              Container(
+                width: 8,
+                height: 8,
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryContainer,
+                  shape: BoxShape.circle,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: AppTheme.spacingSm),
+          Text(
+            mainEntry != null
+                ? CurrencyUtils.formatAmount(mainEntry.value, mainEntry.key)
+                : '\$0.00',
+            style: Theme.of(context).textTheme.displayLarge?.copyWith(
+                  fontSize: 36,
+                  color: AppColors.textPrimary,
+                  fontWeight: FontWeight.w600,
+                ),
+          ),
+          const SizedBox(height: AppTheme.spacingXs),
+          Text(
+            hasDebts
+                ? '${totals.length} moneda(s) registrada(s)'
+                : 'Todas las cuentas están al día',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+        ],
       ),
     );
   }
@@ -359,33 +422,37 @@ class HomeScreen extends ConsumerWidget {
     required String title,
     required String subtitle,
     required IconData icon,
-    required Color color,
+    required Color accentColor,
     required VoidCallback onTap,
   }) {
     return Container(
       decoration: BoxDecoration(
-        color: AppColors.card,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        color: AppColors.surfaceContainerLowest,
+        borderRadius: BorderRadius.circular(AppTheme.radiusMd),
+        border: Border.all(color: AppColors.outlineVariant, width: 1.0),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(AppTheme.radiusMd),
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(AppTheme.spacingMd),
             child: Row(
               children: [
                 Container(
-                  padding: const EdgeInsets.all(8),
+                  padding: const EdgeInsets.all(AppTheme.spacingSm),
                   decoration: BoxDecoration(
-                    color: color.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.surfaceContainerLow,
+                    borderRadius: BorderRadius.circular(AppTheme.radiusSm),
+                    border: Border.all(
+                      color: AppColors.outlineVariant,
+                      width: 1.0,
+                    ),
                   ),
-                  child: Icon(icon, color: color, size: 20),
+                  child: Icon(icon, color: accentColor, size: 18),
                 ),
-                const SizedBox(width: 10),
+                const SizedBox(width: AppTheme.spacingSm),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -395,16 +462,18 @@ class HomeScreen extends ConsumerWidget {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 13,
+                          color: AppColors.textPrimary,
                         ),
                       ),
+                      const SizedBox(height: 2),
                       Text(
                         subtitle,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
-                          fontSize: 10,
+                          fontSize: 11,
                           color: AppColors.textSecondary,
                         ),
                       ),
@@ -424,70 +493,39 @@ class HomeScreen extends ConsumerWidget {
       case 'barberia':
         return _buildActionTile(
           context,
-          title: 'Servicios & Comisiones',
-          subtitle: 'Gestor de barbería',
+          title: 'Servicios',
+          subtitle: 'Comisiones barbería',
           icon: Icons.content_cut_rounded,
-          color: const Color(0xFF1E88E5),
+          accentColor: AppColors.primaryContainer,
           onTap: () => context.push('/barberia'),
         );
       case 'reposteria':
         return _buildActionTile(
           context,
-          title: 'Costeo de Recetas',
-          subtitle: 'Insumos y utilidades',
+          title: 'Costeos',
+          subtitle: 'Recetas e insumos',
           icon: Icons.cake_rounded,
-          color: const Color(0xFFE91E63),
+          accentColor: AppColors.primaryContainer,
           onTap: () => context.push('/reposteria'),
         );
       case 'inmobiliaria':
         return _buildActionTile(
           context,
-          title: 'Propiedades HD',
-          subtitle: 'Comisiones e inmuebles',
+          title: 'Propiedades',
+          subtitle: 'Inmuebles y comisiones',
           icon: Icons.home_work_rounded,
-          color: const Color(0xFF7C4DFF),
+          accentColor: AppColors.primaryContainer,
           onTap: () => context.push('/inmobiliaria'),
         );
       default:
         return _buildActionTile(
           context,
-          title: 'Productos / Stock',
-          subtitle: 'Catálogo de inventario',
-          icon: Icons.inventory_2_rounded,
-          color: AppColors.warning,
+          title: 'Productos',
+          subtitle: 'Inventario y stock',
+          icon: Icons.inventory_2_outlined,
+          accentColor: AppColors.primaryContainer,
           onTap: () => context.push(AppRouter.products),
         );
     }
-  }
-
-  Widget _buildTotalSummary(
-      BuildContext context, Map<String, double> totals) {
-    if (totals.isEmpty) {
-      return Text(
-        'Sin cuentas pendientes',
-        style: Theme.of(context).textTheme.titleMedium?.copyWith(
-              color: Colors.white,
-              fontWeight: FontWeight.bold,
-            ),
-      );
-    }
-
-    final mainEntry = totals.entries.first;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Total Por Cobrar:',
-          style: TextStyle(color: Colors.white70, fontSize: 12),
-        ),
-        Text(
-          CurrencyUtils.formatAmount(mainEntry.value, mainEntry.key),
-          style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w800,
-              ),
-        ),
-      ],
-    );
   }
 }

@@ -1,78 +1,93 @@
 import 'package:flutter/material.dart';
 
-/// Paleta de colores oficial de CuentasClaras inspirada en el Design System de Google Stitch MCP.
+/// Paleta de colores oficial de CuentasClaras extraída directamente del
+/// Design System "Precision Minimalist" generado en Stitch MCP.
 ///
-/// Combina "Financial Utility" con Deep Slate (#081425, #0F172A) y Emerald Green (#10B981, #4EDEA3).
+/// Principios: Minimalismo Funcional, jerarquía tipográfica, fondo neutro claro
+/// con contenedor acentuado en azul eléctrico (#0052FF / #003EC7).
 class AppColors {
   AppColors._();
 
-  // ── Primarios (Stitch Emerald) ──────────────────────────────
-  static const Color primary = Color(0xFF10B981);        // Verde esmeralda Stitch
-  static const Color primaryLight = Color(0xFF4EDEA3);   // Emerald tint
-  static const Color primaryDark = Color(0xFF059669);
-  static const Color onPrimary = Colors.white;
+  // ── Stitch Primary & Accent ──────────────────────────────────
+  static const Color primary = Color(0xFF003EC7);          // Primary Blue
+  static const Color primaryContainer = Color(0xFF0052FF); // Electric Accent
+  static const Color primaryLight = Color(0xFFB7C4FF);
+  static const Color primaryDark = Color(0xFF003EC7);
+  static const Color onPrimary = Color(0xFFFFFFFF);
+  static const Color onPrimaryContainer = Color(0xFFDFE3FF);
 
-  // ── Secundarios (Stitch Deep Slate) ─────────────────────────
-  static const Color secondary = Color(0xFF0F172A);      // Deep Slate
-  static const Color secondaryLight = Color(0xFF1E293B); // Card Slate
-  static const Color onSecondary = Colors.white;
+  // ── Stitch Secondary & Tonal ─────────────────────────────────
+  static const Color secondary = Color(0xFF4459A8);
+  static const Color secondaryContainer = Color(0xFF95AAFE);
+  static const Color secondaryLight = Color(0xFF95AAFE);
+  static const Color onSecondary = Color(0xFFFFFFFF);
 
-  // ── Superficies Modo Claro ─────────────────────────────────
-  static const Color surface = Color(0xFFF8FAFC);
-  static const Color surfaceVariant = Color(0xFFF1F5F9);
-  static const Color background = Color(0xFFF8FAFC);
-  static const Color card = Colors.white;
+  // ── Superficies & Contenedores (Clean Slate) ─────────────────
+  static const Color background = Color(0xFFFBF8FF);
+  static const Color surface = Color(0xFFFBF8FF);
+  static const Color surfaceVariant = Color(0xFFF3F2FF);
+  static const Color surfaceContainerLowest = Color(0xFFFFFFFF); // Pure white cards
+  static const Color surfaceContainerLow = Color(0xFFF3F2FF);    // Sunken wells
+  static const Color surfaceContainer = Color(0xFFEDEDFB);       // Light container
+  static const Color surfaceContainerHigh = Color(0xFFE7E7F5);
+  static const Color surfaceContainerHighest = Color(0xFFE1E1EF);
+  static const Color card = Color(0xFFFFFFFF);
+
+  // ── Texto & Contraste ───────────────────────────────────────
+  static const Color onSurface = Color(0xFF191B25);        // Charcoal primary text
+  static const Color onSurfaceVariant = Color(0xFF434656); // Slate secondary text
+  static const Color textPrimary = Color(0xFF191B25);
+  static const Color textSecondary = Color(0xFF434656);
+  static const Color textTertiary = Color(0xFF737688);
+  static const Color textOnDark = Color(0xFFFFFFFF);
+
+  // ── Bordes & Líneas (1px Clean Grid) ─────────────────────────
+  static const Color outline = Color(0xFF737688);
+  static const Color outlineVariant = Color(0xFFC3C5D9);     // Tonal 1px borders
+  static const Color border = Color(0xFFC3C5D9);
+  static const Color divider = Color(0xFFE1E1EF);
 
   // ── Semánticos ─────────────────────────────────────────────
-  static const Color error = Color(0xFFEF4444);           // Rojo coral
-  static const Color errorLight = Color(0xFFFEE2E2);
-  static const Color warning = Color(0xFFF59E0B);         // Ámbar
-  static const Color warningLight = Color(0xFFFEF3C7);
-  static const Color success = Color(0xFF10B981);         // Verde esmeralda
+  static const Color error = Color(0xFFBA1A1A);
+  static const Color errorLight = Color(0xFFFFDAD6);
+  static const Color errorContainer = Color(0xFFFFDAD6);
+  static const Color warning = Color(0xFFBF3003);
+  static const Color warningLight = Color(0xFFFFDBD2);
+  static const Color success = Color(0xFF059669);
   static const Color successLight = Color(0xFFD1FAE5);
-  static const Color info = Color(0xFF3B82F6);            // Azul cobalto
+  static const Color info = Color(0xFF004CED);
 
-  // ── Texto Modo Claro ───────────────────────────────────────
-  static const Color textPrimary = Color(0xFF0F172A);
-  static const Color textSecondary = Color(0xFF64748B);
-  static const Color textTertiary = Color(0xFF94A3B8);
-  static const Color textOnDark = Color(0xFFF8FAFC);
-
-  // ── Bordes & Divisores ─────────────────────────────────────
-  static const Color border = Color(0xFFE2E8F0);
-  static const Color divider = Color(0xFFE2E8F0);
-
-  // ── Modo Oscuro (Stitch Financial Utility Dark Mode) ────────
-  static const Color darkBackground = Color(0xFF081425);  // Slate Lowest
-  static const Color darkSurface = Color(0xFF152031);     // Slate Container
-  static const Color darkSurfaceVariant = Color(0xFF1F2A3C);
-  static const Color darkCard = Color(0xFF152031);
-  static const Color darkBorder = Color(0xFF2A3548);
-  static const Color darkTextPrimary = Color(0xFFD8E3FB);
-  static const Color darkTextSecondary = Color(0xFF94A3B8);
-
-  // ── Gradientes Estilo Stitch ────────────────────────────────
+  // ── Gradientes Minimalistas ──────────────────────────────────
   static const LinearGradient primaryGradient = LinearGradient(
-    colors: [primary, Color(0xFF06B6D4)],
+    colors: [primary, primaryContainer],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient heroGradient = LinearGradient(
-    colors: [Color(0xFF081425), Color(0xFF064E3B)],
+    colors: [primary, primaryContainer],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient debtGradient = LinearGradient(
-    colors: [error, Color(0xFFEC4899)],
+    colors: [error, Color(0xFF93000A)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
 
   static const LinearGradient successGradient = LinearGradient(
-    colors: [success, Color(0xFF059669)],
+    colors: [success, Color(0xFF047857)],
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
   );
+
+  // ── Dark Mode Precision ─────────────────────────────────────
+  static const Color darkBackground = Color(0xFF191B25);
+  static const Color darkSurface = Color(0xFF2E303A);
+  static const Color darkSurfaceVariant = Color(0xFF434656);
+  static const Color darkCard = Color(0xFF2E303A);
+  static const Color darkBorder = Color(0xFF434656);
+  static const Color darkTextPrimary = Color(0xFFF0EFFE);
+  static const Color darkTextSecondary = Color(0xFFC3C5D9);
 }

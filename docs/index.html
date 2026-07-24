@@ -8,25 +8,41 @@
     <meta name="keywords" content="ERP gratis, bodegas, barberias, reposteria, inmobiliarias, fiados whatsapp, caja chica, punto de venta gratis, latam">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        /* ── Design System "Precision Minimalist" (Stitch MCP) ───────────────── */
         :root {
-            --primary: #10B981;
-            --primary-dark: #059669;
-            --primary-light: #34D399;
-            --secondary: #1E3A5F;
-            --accent-purple: #7C4DFF;
-            --accent-pink: #E91E63;
-            --dark-bg: #0F172A;
-            --surface: #FAFAF9;
-            --card-bg: #FFFFFF;
-            --text-main: #0F172A;
-            --text-muted: #64748B;
-            --border-color: #E2E8F0;
-            --radius-lg: 20px;
-            --radius-md: 12px;
-            --shadow-soft: 0 10px 30px -10px rgba(0, 0, 0, 0.08);
-            --shadow-glow: 0 15px 35px -5px rgba(16, 185, 129, 0.35);
+            --primary: #003EC7;
+            --primary-container: #0052FF;
+            --primary-light: #B7C4FF;
+            --secondary: #4459A8;
+            --background: #FBF8FF;
+            --surface: #FBF8FF;
+            --surface-lowest: #FFFFFF;
+            --surface-low: #F3F2FF;
+            --surface-container: #EDEDFB;
+            --surface-high: #E7E7F5;
+            --text-main: #191B25;
+            --text-secondary: #434656;
+            --text-tertiary: #737688;
+            --border-color: #C3C5D9;
+            --border-subtle: #E1E1EF;
+            --error: #BA1A1A;
+            --success: #059669;
+
+            --font-heading: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 8px;
+
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-xxl: 64px;
         }
 
         * {
@@ -36,15 +52,17 @@
         }
 
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--surface);
+            font-family: var(--font-body);
+            background-color: var(--background);
             color: var(--text-main);
-            line-height: 1.6;
+            line-height: 1.5;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
         h1, h2, h3, h4, .brand-font {
-            font-family: 'Outfit', sans-serif;
+            font-family: var(--font-heading);
+            color: var(--text-main);
         }
 
         /* ── Navbar ────────────────────────────────────────── */
@@ -52,10 +70,9 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            background: rgba(255, 255, 255, 0.85);
-            backdrop-filter: blur(12px);
+            background: var(--surface-lowest);
             border-bottom: 1px solid var(--border-color);
-            padding: 1rem 2rem;
+            padding: 16px 32px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -64,191 +81,174 @@
         .logo-container {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             text-decoration: none;
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-            border-radius: 12px;
+            width: 36px;
+            height: 36px;
+            background: var(--primary-container);
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-weight: 800;
-            font-size: 1.2rem;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            font-family: var(--font-heading);
+            font-weight: 700;
+            font-size: 1.1rem;
         }
 
         .logo-text {
-            font-size: 1.35rem;
-            font-weight: 800;
-            color: var(--secondary);
+            font-size: 1.25rem;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: var(--text-main);
             letter-spacing: -0.02em;
         }
 
         .logo-badge {
-            background: rgba(16, 185, 129, 0.12);
-            color: var(--primary-dark);
+            background: var(--surface-low);
+            color: var(--primary-container);
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 600;
             padding: 2px 8px;
-            border-radius: 6px;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 24px;
             align-items: center;
             list-style: none;
         }
 
         .nav-links a {
             text-decoration: none;
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.95rem;
-            transition: color 0.2s;
+            color: var(--text-secondary);
+            font-weight: 500;
+            font-size: 0.9rem;
+            transition: color 0.15s ease;
         }
 
         .nav-links a:hover {
-            color: var(--primary-dark);
+            color: var(--primary-container);
         }
 
         .btn-nav {
-            background: var(--primary);
+            background: var(--primary-container);
             color: white !important;
-            padding: 0.6rem 1.2rem;
-            border-radius: var(--radius-md);
-            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
-            transition: transform 0.2s;
+            padding: 8px 16px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            transition: background-color 0.15s ease;
         }
 
         .btn-nav:hover {
-            transform: translateY(-2px);
+            background: var(--primary);
         }
 
         /* ── Hero Section ──────────────────────────────────── */
         .hero {
             position: relative;
-            background: linear-gradient(135deg, #0F172A 0%, #1E293B 50%, #064E3B 100%);
-            color: white;
-            padding: 6rem 1.5rem 8rem;
+            background: var(--surface-lowest);
+            color: var(--text-main);
+            padding: 64px 24px 64px;
             text-align: center;
-            border-bottom-left-radius: 40px;
-            border-bottom-right-radius: 40px;
-            overflow: hidden;
-        }
-
-        .hero::before {
-            content: '';
-            position: absolute;
-            top: -20%;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 800px;
-            height: 800px;
-            background: radial-gradient(circle, rgba(16, 185, 129, 0.15) 0%, rgba(0,0,0,0) 70%);
-            pointer-events: none;
+            border-bottom: 1px solid var(--border-color);
         }
 
         .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 0.5rem 1.25rem;
-            border-radius: 99px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--primary-light);
-            margin-bottom: 2rem;
+            background: var(--surface-low);
+            border: 1px solid var(--border-color);
+            padding: 6px 16px;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
         }
 
         .hero h1 {
-            font-size: 3.5rem;
-            font-weight: 800;
+            font-size: 3rem;
+            font-weight: 700;
             line-height: 1.15;
-            letter-spacing: -0.03em;
-            max-width: 900px;
-            margin: 0 auto 1.5rem;
+            letter-spacing: -0.02em;
+            max-width: 860px;
+            margin: 0 auto 16px;
         }
 
         .hero h1 span {
-            background: linear-gradient(135deg, #34D399 0%, #A7F3D0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--primary-container);
         }
 
         .hero-subtitle {
-            font-size: 1.25rem;
-            color: #94A3B8;
-            max-width: 680px;
-            margin: 0 auto 2.5rem;
+            font-size: 1.15rem;
+            color: var(--text-secondary);
+            max-width: 640px;
+            margin: 0 auto 32px;
             font-weight: 400;
+            line-height: 1.6;
         }
 
         .hero-ctas {
             display: flex;
             justify-content: center;
-            gap: 1.25rem;
+            gap: 16px;
             flex-wrap: wrap;
-            margin-bottom: 3.5rem;
+            margin-bottom: 48px;
         }
 
         .btn-hero-primary {
             display: inline-flex;
             align-items: center;
             gap: 10px;
-            background: var(--primary);
+            background: var(--primary-container);
             color: white;
             text-decoration: none;
-            padding: 1.1rem 2.2rem;
-            border-radius: 14px;
-            font-weight: 700;
-            font-size: 1.15rem;
-            box-shadow: var(--shadow-glow);
-            transition: all 0.25s ease;
+            padding: 14px 28px;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 1rem;
+            transition: background-color 0.15s ease;
         }
 
         .btn-hero-primary:hover {
-            background: var(--primary-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 20px 40px -5px rgba(16, 185, 129, 0.5);
+            background: var(--primary);
         }
 
         .btn-hero-secondary {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: rgba(255, 255, 255, 0.1);
-            color: white;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+            background: var(--surface-lowest);
+            color: var(--text-main);
+            border: 1px solid var(--border-color);
             text-decoration: none;
-            padding: 1.1rem 2rem;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 1.1rem;
-            backdrop-filter: blur(8px);
-            transition: all 0.2s ease;
+            padding: 14px 24px;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
+            font-size: 1rem;
+            transition: background-color 0.15s ease;
         }
 
         .btn-hero-secondary:hover {
-            background: rgba(255, 255, 255, 0.2);
+            background: var(--surface-low);
         }
 
         .hero-stats {
             display: flex;
             justify-content: center;
-            gap: 3rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding-top: 2rem;
-            max-width: 700px;
+            gap: 48px;
+            border-top: 1px solid var(--border-subtle);
+            padding-top: 32px;
+            max-width: 640px;
             margin: 0 auto;
         }
 
@@ -258,226 +258,224 @@
 
         .stat-num {
             font-size: 1.75rem;
-            font-weight: 800;
-            color: white;
+            font-weight: 700;
+            font-family: var(--font-heading);
+            color: var(--primary-container);
         }
 
         .stat-label {
             font-size: 0.85rem;
-            color: #94A3B8;
+            color: var(--text-secondary);
         }
 
         /* ── Container General ─────────────────────────────── */
         .section-container {
             max-width: 1140px;
             margin: 0 auto;
-            padding: 5rem 1.5rem;
+            padding: 64px 24px;
         }
 
         .section-header {
             text-align: center;
-            max-width: 700px;
-            margin: 0 auto 3.5rem;
+            max-width: 640px;
+            margin: 0 auto 48px;
         }
 
         .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            margin-bottom: 1rem;
-            color: var(--secondary);
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.01em;
+            margin-bottom: 12px;
+            color: var(--text-main);
         }
 
         .section-header p {
-            color: var(--text-muted);
-            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
         }
 
         /* ── Rubros Grid (Smart Modules) ───────────────────── */
         .rubros-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
         }
 
         .rubro-card {
-            background: var(--card-bg);
+            background: var(--surface-lowest);
             border: 1px solid var(--border-color);
-            border-radius: var(--radius-lg);
-            padding: 2rem;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-soft);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            transition: border-color 0.15s ease;
         }
 
         .rubro-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary-light);
-            box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.12);
+            border-color: var(--primary-container);
         }
 
         .rubro-icon {
-            width: 54px;
-            height: 54px;
-            border-radius: 14px;
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: var(--surface-low);
+            border: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.75rem;
-            margin-bottom: 1.25rem;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+            color: var(--primary-container);
         }
 
         .rubro-card h3 {
-            font-size: 1.35rem;
-            font-weight: 700;
-            margin-bottom: 0.6rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
 
         .rubro-card p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
             line-height: 1.5;
         }
 
         /* ── Features List ─────────────────────────────────── */
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 2rem;
-            margin-top: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+            margin-top: 24px;
         }
 
         .feature-box {
             display: flex;
-            gap: 1.25rem;
-            background: white;
-            padding: 1.75rem;
-            border-radius: var(--radius-lg);
+            gap: 16px;
+            background: var(--surface-lowest);
+            padding: 24px;
+            border-radius: var(--radius-md);
             border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-soft);
         }
 
         .feature-icon-wrapper {
-            width: 48px;
-            height: 48px;
-            background: rgba(16, 185, 129, 0.1);
-            color: var(--primary-dark);
-            border-radius: 12px;
+            width: 40px;
+            height: 40px;
+            background: var(--surface-low);
+            color: var(--primary-container);
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--border-subtle);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             flex-shrink: 0;
         }
 
         .feature-box h4 {
-            font-size: 1.15rem;
-            margin-bottom: 0.4rem;
-            font-weight: 700;
+            font-size: 1.05rem;
+            margin-bottom: 4px;
+            font-weight: 600;
         }
 
         .feature-box p {
-            color: var(--text-muted);
-            font-size: 0.925rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
         }
 
         /* ── Installation Steps ────────────────────────────── */
         .steps-card {
-            background: linear-gradient(135deg, #1E293B 0%, #0F172A 100%);
-            color: white;
-            border-radius: 28px;
-            padding: 3.5rem 2.5rem;
-            margin-top: 3rem;
+            background: var(--surface-lowest);
+            color: var(--text-main);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border-color);
+            padding: 48px 32px;
+            margin-top: 32px;
         }
 
         .steps-card h2 {
-            font-size: 2.2rem;
-            font-weight: 800;
+            font-size: 2rem;
+            font-weight: 700;
             text-align: center;
-            margin-bottom: 3rem;
-            color: white;
+            margin-bottom: 48px;
         }
 
         .steps-list {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-            gap: 2rem;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
         }
 
         .step-item {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 18px;
-            padding: 2rem;
+            background: var(--surface-low);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 24px;
             text-align: center;
-            position: relative;
         }
 
         .step-number {
-            width: 44px;
-            height: 44px;
-            background: var(--primary);
+            width: 36px;
+            height: 36px;
+            background: var(--primary-container);
             color: white;
-            font-weight: 800;
-            font-size: 1.2rem;
-            border-radius: 50%;
+            font-weight: 700;
+            font-size: 1rem;
+            border-radius: var(--radius-sm);
             display: flex;
             align-items: center;
             justify-content: center;
-            margin: -3.2rem auto 1.25rem;
-            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.4);
+            margin: 0 auto 16px;
         }
 
         .step-item h4 {
-            font-size: 1.15rem;
-            margin-bottom: 0.5rem;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
         }
 
         .step-item p {
-            color: #94A3B8;
-            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-size: 0.875rem;
         }
 
         /* ── FAQ Section ───────────────────────────────────── */
         .faq-accordion {
-            max-width: 800px;
+            max-width: 760px;
             margin: 0 auto;
         }
 
         .faq-item {
-            background: white;
+            background: var(--surface-lowest);
             border: 1px solid var(--border-color);
-            border-radius: 14px;
-            margin-bottom: 1rem;
-            padding: 1.25rem 1.5rem;
+            border-radius: var(--radius-md);
+            margin-bottom: 12px;
+            padding: 20px 24px;
         }
 
         .faq-item h4 {
-            font-size: 1.1rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--secondary);
+            font-size: 1.05rem;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--text-main);
         }
 
         .faq-item p {
-            color: var(--text-muted);
-            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-size: 0.9rem;
         }
 
         /* ── Footer ────────────────────────────────────────── */
         footer {
-            background: #0F172A;
-            color: #94A3B8;
-            padding: 3rem 1.5rem;
+            background: var(--surface-lowest);
+            color: var(--text-secondary);
+            padding: 48px 24px;
             text-align: center;
-            font-size: 0.9rem;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            font-size: 0.875rem;
+            border-top: 1px solid var(--border-color);
         }
 
         footer a {
-            color: var(--primary-light);
+            color: var(--primary-container);
             text-decoration: none;
+            font-weight: 500;
         }
 
         footer a:hover {
@@ -486,10 +484,10 @@
 
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.4rem;
+                font-size: 2.2rem;
             }
             .hero-stats {
-                gap: 1.5rem;
+                gap: 24px;
             }
             .nav-links {
                 display: none;
@@ -527,7 +525,7 @@
 
         <div class="hero-ctas">
             <a href="./cuentas_claras_v0.1.0.apk" class="btn-hero-primary" download>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                 Descargar APK Directo v0.1.0
             </a>
             <a href="#instalacion" class="btn-hero-secondary">
@@ -560,32 +558,32 @@
 
         <div class="rubros-grid">
             <div class="rubro-card">
-                <div class="rubro-icon" style="background: rgba(16, 185, 129, 0.15); color: #059669;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+                <div class="rubro-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
                 </div>
                 <h3>Bodegas & Minimarkets</h3>
                 <p>Cobro express POS en 2 toques, control de fiados con recordatorios por WhatsApp, cuadre de caja diaria y alertas de stock bajo.</p>
             </div>
 
             <div class="rubro-card">
-                <div class="rubro-icon" style="background: rgba(30, 136, 229, 0.15); color: #1E88E5;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+                <div class="rubro-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
                 </div>
                 <h3>Barberías & Estética</h3>
                 <p>Catálogo de cortes y servicios, registro de atenciones del día y cálculo automático de comisiones por barbero o estilista.</p>
             </div>
 
             <div class="rubro-card">
-                <div class="rubro-icon" style="background: rgba(233, 30, 99, 0.15); color: #E91E63;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <div class="rubro-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
                 <h3>Repostería & Encargos</h3>
                 <p>Calculador de costo de recetas (materia prima vs. margen neto real), control de pedidos a entregar y cobro de señas/anticipos.</p>
             </div>
 
             <div class="rubro-card">
-                <div class="rubro-icon" style="background: rgba(124, 77, 255, 0.15); color: #7C4DFF;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                <div class="rubro-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
                 </div>
                 <h3>Inmobiliarias & Agentes</h3>
                 <p>Catálogo de inmuebles en venta o alquiler, comisiones calculadas y generación de recibos/comprobantes de reserva en PDF.</p>
@@ -594,7 +592,7 @@
     </section>
 
     <!-- ── Funciones Principales ────────────────────────────── -->
-    <section id="funciones" class="section-container" style="background: #F1F5F9; border-radius: 32px;">
+    <section id="funciones" class="section-container">
         <div class="section-header">
             <h2>Todo lo que Necesitas para Crecer</h2>
             <p>Herramientas potentes simplificadas para operar desde cualquier teléfono Android.</p>
@@ -602,8 +600,8 @@
 
         <div class="features-grid">
             <div class="feature-box">
-                <div class="feature-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
                 </div>
                 <div>
                     <h4>Punto de Venta POS Express</h4>
@@ -612,8 +610,8 @@
             </div>
 
             <div class="feature-box">
-                <div class="feature-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
                 </div>
                 <div>
                     <h4>Operación 100% Offline</h4>
@@ -622,8 +620,8 @@
             </div>
 
             <div class="feature-box">
-                <div class="feature-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
                 </div>
                 <div>
                     <h4>Cobros por WhatsApp con 1-Tap</h4>
@@ -632,8 +630,8 @@
             </div>
 
             <div class="feature-box">
-                <div class="feature-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
                 </div>
                 <div>
                     <h4>Multimoneda Flexible (LATAM)</h4>
@@ -642,8 +640,8 @@
             </div>
 
             <div class="feature-box">
-                <div class="feature-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                 </div>
                 <div>
                     <h4>Impresión Térmica Bluetooth (PRO)</h4>
@@ -652,8 +650,8 @@
             </div>
 
             <div class="feature-box">
-                <div class="feature-icon-wrapper" style="display: inline-flex; align-items: center; justify-content: center;">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#10B981" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                 </div>
                 <div>
                     <h4>Reportes de Ganancia Neta Real</h4>
@@ -711,7 +709,7 @@
 
     <!-- ── Footer ───────────────────────────────────────────── -->
     <footer>
-        <p>&copy; 2026 CuentasClaras Mini ERP Lite — Diseñado con ❤️ para emprendedores y comerciantes en Latinoamérica.</p>
+        <p>&copy; 2026 CuentasClaras Mini ERP Lite — Diseñado para emprendedores y comerciantes en Latinoamérica.</p>
         <p style="margin-top: 10px;">
             <a href="app-ads.txt" target="_blank">Archivo app-ads.txt oficial</a> • 
             <a href="https://github.com/code-rmendoza/CuentasClaras" target="_blank">Código Fuente en GitHub</a>
