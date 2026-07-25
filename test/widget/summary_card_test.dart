@@ -22,7 +22,7 @@ void main() {
       );
 
       expect(find.text('Dólar'), findsOneWidget);
-      expect(find.byIcon(Icons.trending_up), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_upward_rounded), findsOneWidget);
     });
   });
 }
