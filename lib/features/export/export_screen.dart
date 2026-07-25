@@ -12,6 +12,7 @@ import '../../core/utils/date_utils.dart' as app_date;
 import '../../core/constants/app_constants.dart';
 import '../../shared/providers/database_provider.dart';
 import '../../data/database/daos/debts_dao.dart';
+import '../../core/services/excel_kardex_service.dart';
 
 /// Pantalla de exportación de datos (CSV, JSON).
 ///
@@ -78,6 +79,17 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
             color: AppColors.info,
             isLoading: _isExporting,
             onTap: () => _exportJSON(context),
+          ),
+          const SizedBox(height: AppTheme.spacingMd),
+
+          _ExportOption(
+            icon: Icons.grid_on_rounded,
+            title: 'Kardex e Inventario (Excel / CSV)',
+            description:
+                'Planilla con existencias, costos, precios y valorización total en almacén.',
+            color: Colors.teal,
+            isLoading: _isExporting,
+            onTap: () => _exportKardexExcel(context),
           ),
           const SizedBox(height: AppTheme.spacingMd),
 
@@ -265,6 +277,36 @@ class _ExportScreenState extends ConsumerState<ExportScreen> {
           content: Text('Error: $e'),
           backgroundColor: AppColors.error,
         ),
+      );
+    } finally {
+      if (mounted) setState(() => _isExporting = false);
+    }
+  }
+
+  Future<void> _exportKardexExcel(BuildContext context) async {
+    setState(() => _isExporting = true);
+    try {
+      final db = ref.read(databaseProvider);
+      final products = await db.productsDao.getActiveProducts();
+      final inventoryWithProducts = await db.inventoryDao.getAllInventory();
+      final inventoryItems = inventoryWithProducts.map((i) => i.inventory).toList();
+
+      await ExcelKardexService.instance.exportAndShareKardex(
+        products: products,
+        inventoryItems: inventoryItems,
+      );
+
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Kardex de Inventario exportado exitosamente'),
+          backgroundColor: Colors.teal,
+        ),
+      );
+    } catch (e) {
+      if (!context.mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al exportar Kardex: $e'), backgroundColor: AppColors.error),
       );
     } finally {
       if (mounted) setState(() => _isExporting = false);

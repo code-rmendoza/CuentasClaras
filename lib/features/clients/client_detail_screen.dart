@@ -9,7 +9,10 @@ import '../../core/router/app_router.dart';
 import '../../shared/providers/database_provider.dart';
 import '../../shared/widgets/loading_indicator.dart';
 import '../../shared/widgets/confirm_dialog.dart';
+import 'package:printing/printing.dart';
 import '../../data/database/app_database.dart';
+import '../../core/services/pdf_report_service.dart';
+import '../../shared/providers/business_profile_provider.dart';
 
 /// Pantalla de detalle de un cliente con sus deudas.
 class ClientDetailScreen extends ConsumerWidget {
@@ -21,6 +24,7 @@ class ClientDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final clientFuture = ref.watch(clientByIdProvider(clientId));
     final debtsStream = ref.watch(debtsByClientProvider(clientId));
+    final profile = ref.watch(businessProfileProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -30,6 +34,28 @@ class ClientDetailScreen extends ConsumerWidget {
           error: (_, _) => const Text('Error'),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.picture_as_pdf_outlined),
+            tooltip: 'Exportar Estado de Cuenta (PDF)',
+            onPressed: () async {
+              final client = await ref.read(databaseProvider).clientsDao.getClientById(clientId);
+              if (client == null) return;
+              final debts = await ref.read(databaseProvider).debtsDao.getDebtsByClient(clientId);
+              final payments = await ref.read(databaseProvider).paymentsDao.getPaymentsByClient(clientId);
+
+              final pdfBytes = await PdfReportService.instance.buildClientStatementPdf(
+                profile: profile,
+                client: client,
+                debts: debts,
+                payments: payments,
+              );
+
+              await Printing.layoutPdf(
+                onLayout: (format) async => pdfBytes,
+                name: 'Estado_Cuenta_${client.name}.pdf',
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.delete_outline),
             onPressed: () => _deleteClient(context, ref),

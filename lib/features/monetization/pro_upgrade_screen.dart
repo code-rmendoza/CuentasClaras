@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../shared/providers/monetization_provider.dart';
+import '../../core/services/in_app_purchase_service.dart';
 
 /// Pantalla de Subscripción & Actualización a CuentasClaras PRO.
 class ProUpgradeScreen extends ConsumerWidget {
@@ -142,16 +143,27 @@ class ProUpgradeScreen extends ConsumerWidget {
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    await ref
-                        .read(monetizationProvider.notifier)
-                        .activateProTier(durationDays: 30);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('¡Plan PRO Mensual activado (\$3.99/mes)!'),
-                          backgroundColor: AppColors.primary,
-                        ),
-                      );
+                    final iap = InAppPurchaseService.instance;
+                    final products = iap.products;
+                    final monthlyProduct = products
+                        .where((p) => p.id == InAppPurchaseService.monthlyProductId)
+                        .firstOrNull;
+
+                    if (monthlyProduct != null) {
+                      await iap.buyProduct(monthlyProduct);
+                    } else {
+                      // Fallback si la tienda aún no responde en modo dev
+                      await ref
+                          .read(monetizationProvider.notifier)
+                          .activateProTier(durationDays: 30);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('¡Plan PRO Mensual iniciado (\$3.99/mes)!'),
+                            backgroundColor: AppColors.primary,
+                          ),
+                        );
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -179,16 +191,27 @@ class ProUpgradeScreen extends ConsumerWidget {
                 height: 52,
                 child: ElevatedButton.icon(
                   onPressed: () async {
-                    await ref
-                        .read(monetizationProvider.notifier)
-                        .activateProTier(durationDays: 365);
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('¡Plan PRO Anual activado (\$29.99/año)! Ahorras 37%'),
-                          backgroundColor: Colors.teal,
-                        ),
-                      );
+                    final iap = InAppPurchaseService.instance;
+                    final products = iap.products;
+                    final yearlyProduct = products
+                        .where((p) => p.id == InAppPurchaseService.yearlyProductId)
+                        .firstOrNull;
+
+                    if (yearlyProduct != null) {
+                      await iap.buyProduct(yearlyProduct);
+                    } else {
+                      // Fallback si la tienda aún no responde en modo dev
+                      await ref
+                          .read(monetizationProvider.notifier)
+                          .activateProTier(durationDays: 365);
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('¡Plan PRO Anual iniciado (\$29.99/año)!'),
+                            backgroundColor: Colors.teal,
+                          ),
+                        );
+                      }
                     }
                   },
                   style: ElevatedButton.styleFrom(
@@ -210,18 +233,14 @@ class ProUpgradeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              // Video Recompensado 24h
+              // Restaurar Compras (Requerido por App Store / Play Store)
               OutlinedButton.icon(
                 onPressed: () async {
-                  await ref
-                      .read(monetizationProvider.notifier)
-                      .grantTemporaryReward();
+                  await InAppPurchaseService.instance.restorePurchases();
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
-                        content: Text(
-                          '¡Has activado PRO por 24h gratis viendo el video!',
-                        ),
+                        content: Text('Consultando compras anteriores en la tienda...'),
                       ),
                     );
                   }
@@ -231,8 +250,28 @@ class ProUpgradeScreen extends ConsumerWidget {
                     borderRadius: BorderRadius.circular(14),
                   ),
                 ),
-                icon: const Icon(Icons.play_circle_fill_rounded),
-                label: const Text('Ver video para probar PRO por 24 horas'),
+                icon: const Icon(Icons.restore_rounded),
+                label: const Text('Restaurar Compras de la Tienda'),
+              ),
+              const SizedBox(height: 8),
+              // Video Recompensado 24h
+              TextButton.icon(
+                onPressed: () async {
+                  await ref
+                      .read(monetizationProvider.notifier)
+                      .grantTemporaryReward();
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text(
+                          '¡Has activado PRO por 24h gratis!',
+                        ),
+                      ),
+                    );
+                  }
+                },
+                icon: const Icon(Icons.play_circle_fill_rounded, size: 18),
+                label: const Text('Probar PRO por 24 horas'),
               ),
             ] else ...[
               SizedBox(

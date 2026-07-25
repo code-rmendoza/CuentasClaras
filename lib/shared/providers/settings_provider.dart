@@ -1,11 +1,33 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:crypto/crypto.dart';
 import 'package:uuid/uuid.dart';
 import '../../core/constants/app_constants.dart';
+
+/// Función de nivel superior para derivación PBKDF2 en un background Isolate.
+String _hashPinIsolate(Map<String, String> params) {
+  final pin = params['pin']!;
+  final salt = params['salt']!;
+  final passwordBytes = utf8.encode(pin);
+  final saltBytes = utf8.encode(salt);
+  final hmac = Hmac(sha256, passwordBytes);
+
+  final block = ByteData(4)..setUint32(0, 1, Endian.big);
+  List<int> u = hmac.convert([...saltBytes, ...block.buffer.asUint8List()]).bytes;
+  List<int> result = List<int>.from(u);
+
+  for (int i = 1; i < 10000; i++) {
+    u = hmac.convert(u).bytes;
+    for (int j = 0; j < result.length; j++) {
+      result[j] ^= u[j];
+    }
+  }
+
+  return base64.encode(result);
+}
 
 /// Estado de configuración de la app.
 class AppSettings {
@@ -82,24 +104,9 @@ class SettingsNotifier extends Notifier<AppSettings> {
     return salt;
   }
 
-  /// Deriva el hash PBKDF2-HMAC-SHA256 del PIN con 10,000 iteraciones.
-  String _hashPin(String pin, String salt) {
-    final passwordBytes = utf8.encode(pin);
-    final saltBytes = utf8.encode(salt);
-    final hmac = Hmac(sha256, passwordBytes);
-
-    final block = ByteData(4)..setUint32(0, 1, Endian.big);
-    List<int> u = hmac.convert([...saltBytes, ...block.buffer.asUint8List()]).bytes;
-    List<int> result = List<int>.from(u);
-
-    for (int i = 1; i < 10000; i++) {
-      u = hmac.convert(u).bytes;
-      for (int j = 0; j < result.length; j++) {
-        result[j] ^= u[j];
-      }
-    }
-
-    return base64.encode(result);
+  /// Deriva el hash PBKDF2-HMAC-SHA256 del PIN con 10,000 iteraciones en un Isolate secundario.
+  Future<String> _hashPin(String pin, String salt) {
+    return compute(_hashPinIsolate, {'pin': pin, 'salt': salt});
   }
 
   /// Hash legacy SHA-256 para soporte retrocompatible.
@@ -113,7 +120,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
     final storedHash = await _storage.read(key: AppConstants.pinStorageKey);
     if (storedHash == null) return false;
     final salt = await _getOrCreateSalt();
-    final computedHash = _hashPin(pin, salt);
+    final computedHash = await _hashPin(pin, salt);
     if (storedHash == computedHash) return true;
 
     // Migración automática si el usuario tenía un hash SHA-256 previo
@@ -129,7 +136,7 @@ class SettingsNotifier extends Notifier<AppSettings> {
   /// Guarda un nuevo PIN almacenando únicamente el digest hash salteado.
   Future<void> setPin(String pin) async {
     final salt = await _getOrCreateSalt();
-    final hash = _hashPin(pin, salt);
+    final hash = await _hashPin(pin, salt);
     await _storage.write(key: AppConstants.pinStorageKey, value: hash);
     await setPinEnabled(true);
   }

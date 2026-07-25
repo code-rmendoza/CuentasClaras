@@ -1,4 +1,8 @@
-storePassword=<password-to-keystore>
-keyPassword=<password-to-key>
-keyAlias=<key-alias>
-storeFile=<path-to-keystore-file>
+# Plantilla de Configuración de Firma de Producción (Android Keystore)
+# Copia este archivo como 'key.properties' en este mismo directorio (android/)
+# y completa con tus credenciales reales. NUNCA subas 'key.properties' ni '*.jks' a Git.
+
+storePassword=TU_PASSWORD_DEL_KEYSTORE
+keyPassword=TU_PASSWORD_DE_LA_LLAVE
+keyAlias=cuentasclaras_release_key
+storeFile=release.jks

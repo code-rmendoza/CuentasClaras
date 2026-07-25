@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import '../../core/services/in_app_purchase_service.dart';
 import 'settings_provider.dart';
 
 class MonetizationState {
@@ -36,17 +38,38 @@ class MonetizationState {
 }
 
 class MonetizationNotifier extends Notifier<MonetizationState> {
+  StreamSubscription<bool>? _purchaseSubscription;
+
   @override
   MonetizationState build() {
     _loadState();
+    _initIap();
+    ref.onDispose(() {
+      _purchaseSubscription?.cancel();
+    });
     return const MonetizationState();
   }
 
   FlutterSecureStorage get _storage => ref.read(secureStorageProvider);
 
+  Future<void> _initIap() async {
+    final iapService = InAppPurchaseService.instance;
+    await iapService.initialize();
+    _purchaseSubscription = iapService.onProStatusChanged.listen((isVerified) {
+      if (isVerified) {
+        activateProTier(durationDays: 365);
+      }
+    });
+  }
+
   Future<void> _loadState() async {
     final isProStr = await _storage.read(key: 'user_is_pro');
     final isPro = isProStr == 'true';
+
+    if (state.proExpirationDate != null &&
+        state.proExpirationDate!.isAfter(DateTime.now())) {
+      return;
+    }
 
     state = MonetizationState(
       isPro: isPro,
@@ -83,10 +106,12 @@ class MonetizationNotifier extends Notifier<MonetizationState> {
     );
   }
 
-  /// Permite desbloquear temporalmente una función PRO viendo un video publicitario (Rewarded Ad).
+  /// Permite desbloquear temporalmente una función PRO por 24 horas.
   Future<void> grantTemporaryReward({Duration duration = const Duration(hours: 24)}) async {
     final exp = DateTime.now().add(duration);
-    state = state.copyWith(
+    state = MonetizationState(
+      isPro: false,
+      adsEnabled: true,
       thermalPrinterEnabled: true,
       cloudBackupEnabled: true,
       proExpirationDate: exp,

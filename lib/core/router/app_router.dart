@@ -25,6 +25,7 @@ import '../../features/invoicing/create_invoice_screen.dart';
 import '../../features/invoicing/invoice_detail_screen.dart';
 import '../../features/purchases/suppliers_list_screen.dart';
 import '../../features/purchases/create_purchase_screen.dart';
+import '../../features/reports/analytics_screen.dart';
 
 /// Configuración de rutas de CuentasClaras Mini ERP Lite.
 class AppRouter {
@@ -173,11 +174,6 @@ class AppRouter {
         },
       ),
       GoRoute(
-        path: products,
-        name: 'products',
-        builder: (context, state) => const ProductsScreen(),
-      ),
-      GoRoute(
         path: export,
         name: 'export',
         builder: (context, state) => const ExportScreen(),
@@ -213,11 +209,6 @@ class AppRouter {
         builder: (context, state) => const CompanyProfileScreen(),
       ),
       GoRoute(
-        path: invoices,
-        name: 'invoices',
-        builder: (context, state) => const InvoicesListScreen(),
-      ),
-      GoRoute(
         path: createInvoice,
         name: 'createInvoice',
         builder: (context, state) => const CreateInvoiceScreen(),
@@ -245,6 +236,11 @@ class AppRouter {
         path: createPurchase,
         name: 'createPurchase',
         builder: (context, state) => const CreatePurchaseScreen(),
+      ),
+      GoRoute(
+        path: '/analytics',
+        name: 'analytics',
+        builder: (context, state) => const AnalyticsScreen(),
       ),
     ],
   );

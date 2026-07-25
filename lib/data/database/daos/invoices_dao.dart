@@ -18,6 +18,25 @@ class InvoicesDao extends DatabaseAccessor<AppDatabase> with _$InvoicesDaoMixin 
         .watch();
   }
 
+  /// Obtiene todas las facturas ordenadas por fecha.
+  Future<List<Invoice>> getAllInvoices() {
+    return (select(invoices)
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
+  /// Obtiene facturas filtradas por estado.
+  Future<List<Invoice>> getInvoicesByStatus(String status) {
+    return (select(invoices)
+          ..where((t) => t.status.equals(status))
+          ..orderBy([
+            (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+          ]))
+        .get();
+  }
+
   /// Obtiene una factura por su ID.
   Future<Invoice?> getInvoiceById(int id) {
     return (select(invoices)..where((t) => t.id.equals(id))).getSingleOrNull();

@@ -68,6 +68,24 @@ class _PosScreenState extends ConsumerState<PosScreen> {
       ),
     );
 
+    // ── Descuento Automático de Inventario ─────────────────
+    final inventoryDao = ref.read(inventoryDaoProvider);
+    final productsDao = ref.read(productsDaoProvider);
+    final activeProds = await productsDao.getActiveProducts();
+    for (final cartItem in savedCart) {
+      final String name = cartItem['name'] as String;
+      final int qty = cartItem['qty'] as int;
+      final matched = activeProds
+          .where((p) => p.name.toLowerCase() == name.toLowerCase())
+          .firstOrNull;
+      if (matched != null) {
+        final inv = await inventoryDao.getByProductId(matched.id);
+        if (inv != null) {
+          await inventoryDao.adjustStock(inv.id, -qty);
+        }
+      }
+    }
+
     if (!mounted) return;
 
     showDialog(

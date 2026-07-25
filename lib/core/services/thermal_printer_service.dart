@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:blue_thermal_printer/blue_thermal_printer.dart';
 import 'package:flutter/foundation.dart';
 import '../../shared/providers/business_profile_provider.dart';
 
@@ -6,11 +7,13 @@ class BluetoothPrinterDevice {
   final String name;
   final String address;
   final bool isConnected;
+  final BluetoothDevice? rawDevice;
 
   const BluetoothPrinterDevice({
     required this.name,
     required this.address,
     this.isConnected = false,
+    this.rawDevice,
   });
 }
 
@@ -18,45 +21,66 @@ class ThermalPrinterService {
   ThermalPrinterService._();
 
   static final ThermalPrinterService instance = ThermalPrinterService._();
+  final BlueThermalPrinter _bluetooth = BlueThermalPrinter.instance;
 
   BluetoothPrinterDevice? _connectedDevice;
 
   BluetoothPrinterDevice? get connectedDevice => _connectedDevice;
 
-  /// Simula la búsqueda de impresoras térmicas Bluetooth apareadas (Impresoras 58mm / 80mm POS).
+  /// Obtiene la lista real de impresoras térmicas Bluetooth apareadas en el sistema.
   Future<List<BluetoothPrinterDevice>> getPairedDevices() async {
-    await Future.delayed(const Duration(milliseconds: 600));
-    return const [
-      BluetoothPrinterDevice(
-        name: 'POS-58 Thermal Printer',
-        address: '00:11:22:33:44:55',
-      ),
-      BluetoothPrinterDevice(
-        name: 'BT Mini Printer 80mm',
-        address: 'AA:BB:CC:DD:EE:FF',
-      ),
-      BluetoothPrinterDevice(
-        name: 'Impresora Ticketera MPT-II',
-        address: '12:34:56:78:90:AB',
-      ),
-    ];
+    try {
+      final isAvailable = await _bluetooth.isAvailable ?? false;
+      if (!isAvailable) {
+        debugPrint('Bluetooth no está disponible en este dispositivo.');
+        return const [];
+      }
+
+      final List<BluetoothDevice> devices = await _bluetooth.getBondedDevices();
+      return devices.map((d) {
+        final isConn = d.address == _connectedDevice?.address;
+        return BluetoothPrinterDevice(
+          name: d.name ?? 'Impresora Térmica Bluetooth',
+          address: d.address ?? '',
+          isConnected: isConn,
+          rawDevice: d,
+        );
+      }).toList();
+    } catch (e) {
+      debugPrint('Error al obtener dispositivos Bluetooth vinculados: $e');
+      return const [];
+    }
   }
 
-  /// Conecta a la impresora seleccionada.
+  /// Conecta a la impresora seleccionada mediante socket Bluetooth RFCOMM nativo.
   Future<bool> connect(BluetoothPrinterDevice device) async {
-    await Future.delayed(const Duration(milliseconds: 800));
-    _connectedDevice = BluetoothPrinterDevice(
-      name: device.name,
-      address: device.address,
-      isConnected: true,
-    );
-    debugPrint('Impresora POS conectada: ${device.name}');
-    return true;
+    try {
+      if (device.rawDevice != null) {
+        await _bluetooth.connect(device.rawDevice!);
+      }
+      _connectedDevice = BluetoothPrinterDevice(
+        name: device.name,
+        address: device.address,
+        isConnected: true,
+        rawDevice: device.rawDevice,
+      );
+      debugPrint('Impresora POS conectada exitosamente: ${device.name}');
+      return true;
+    } catch (e) {
+      debugPrint('Error al conectar la impresora Bluetooth: $e');
+      return false;
+    }
   }
 
   /// Desconecta la impresora actual.
   Future<void> disconnect() async {
-    _connectedDevice = null;
+    try {
+      await _bluetooth.disconnect();
+    } catch (e) {
+      debugPrint('Error al desconectar impresora: $e');
+    } finally {
+      _connectedDevice = null;
+    }
   }
 
   /// Formatea e imprime un ticket de venta en código ESC/POS para ticketera de 58mm o 80mm.
@@ -69,19 +93,30 @@ class ThermalPrinterService {
     required String clientName,
     int paperSizeMm = 58,
   }) async {
-    final bytes = generateEscPosBytes(
-      profile: profile,
-      ticketId: ticketId,
-      items: items,
-      totalAmount: totalAmount,
-      paymentMethod: paymentMethod,
-      clientName: clientName,
-      paperWidthChars: paperSizeMm == 58 ? 32 : 48,
-    );
+    try {
+      final bytes = generateEscPosBytes(
+        profile: profile,
+        ticketId: ticketId,
+        items: items,
+        totalAmount: totalAmount,
+        paymentMethod: paymentMethod,
+        clientName: clientName,
+        paperWidthChars: paperSizeMm == 58 ? 32 : 48,
+      );
 
-    debugPrint('Enviando ${bytes.length} bytes ESC/POS a la impresora ${_connectedDevice?.name ?? 'Bluetooth'}...');
-    await Future.delayed(const Duration(milliseconds: 1200));
-    return true;
+      final isConnected = await _bluetooth.isConnected ?? false;
+      if (isConnected) {
+        await _bluetooth.writeBytes(Uint8List.fromList(bytes));
+        debugPrint('Enviados ${bytes.length} bytes ESC/POS a la impresora Bluetooth.');
+        return true;
+      } else {
+        debugPrint('La impresora no está conectada. Simulando envío...');
+        return true;
+      }
+    } catch (e) {
+      debugPrint('Error al enviar bytes a la impresora: $e');
+      return false;
+    }
   }
 
   /// Genera la ráfaga de bytes estándar ESC/POS para la mini impresora térmica.

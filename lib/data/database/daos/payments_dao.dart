@@ -27,6 +27,18 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
         .get();
   }
 
+  /// Obtiene todos los pagos realizados por un cliente específico.
+  Future<List<Payment>> getPaymentsByClient(int clientId) async {
+    final query = select(payments).join([
+      innerJoin(debts, debts.id.equalsExp(payments.debtId)),
+    ])
+      ..where(debts.clientId.equals(clientId))
+      ..orderBy([OrderingTerm.desc(payments.createdAt)]);
+
+    final results = await query.get();
+    return results.map((row) => row.readTable(payments)).toList();
+  }
+
   /// Stream reactivo de pagos de una deuda.
   Stream<List<Payment>> watchPaymentsByDebt(int debtId) {
     return (select(payments)
@@ -35,10 +47,7 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
         .watch();
   }
 
-  /// Registra un nuevo pago y verifica si la deuda queda saldada.
-  ///
-  /// Retorna `true` si la deuda quedó completamente pagada.
-  /// Registra un nuevo pago y verifica si la deuda queda saldada.
+  /// Registra un nuevo pago, genera el ingreso correspondiente en la contabilidad y verifica si la deuda queda saldada.
   ///
   /// Retorna `true` si la deuda quedó completamente pagada.
   Future<bool> insertPaymentAndCheck(PaymentsCompanion entry) {
@@ -59,6 +68,18 @@ class PaymentsDao extends DatabaseAccessor<AppDatabase>
       final debt = await (select(debts)
             ..where((t) => t.id.equals(debtId)))
           .getSingle();
+
+      // Auto-insertar el ingreso correspondiente en la tabla Incomes para unificación financiera
+      await into(db.incomes).insert(
+        IncomesCompanion.insert(
+          amount: entry.amount.value,
+          currency: entry.currency.value,
+          paymentMethod: 'cash',
+          description: 'Abono Deuda #$debtId',
+          clientId: Value(debt.clientId),
+          createdAt: Value(DateTime.now()),
+        ),
+      );
 
       // Marcar como pagada si el total de abonos >= monto de la deuda (comparación entera exacta)
       if (totalPaidCents >= debt.amount) {

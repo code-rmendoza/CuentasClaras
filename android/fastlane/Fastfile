@@ -1,0 +1,27 @@
+default_platform(:android)
+
+platform :android do
+  desc "Ejecuta las pruebas unitarias y estáticas"
+  lane :test do
+    sh("flutter analyze")
+    sh("flutter test --coverage")
+  end
+
+  desc "Compila el APK para el entorno de desarrollo (Dev)"
+  lane :build_dev do
+    sh("flutter build apk --flavor dev -t lib/main.dart")
+  end
+
+  desc "Compila y distribuye el App Bundle a Google Play Store (Prod)"
+  lane :deploy_prod do
+    test
+    sh("flutter build appbundle --flavor prod -t lib/main.dart")
+    upload_to_play_store(
+      track: 'internal',
+      aab: '../build/app/outputs/bundle/prodRelease/app-prod-release.aab',
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true
+    )
+  end
+end

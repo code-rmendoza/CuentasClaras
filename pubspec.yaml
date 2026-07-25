@@ -34,11 +34,23 @@ dependencies:
   # Export & Share
   share_plus: ^10.1.4
   pdf: ^3.11.2
+  printing: ^5.13.2
   csv: ^6.0.0
 
   # Security
   flutter_secure_storage: ^9.2.4
   crypto: ^3.0.6
+
+  # Monetization & Store Payments
+  in_app_purchase: ^3.2.0
+
+  # Google Drive API & OAuth2
+  google_sign_in: ^6.2.2
+  googleapis: ^13.2.0
+  extension_google_sign_in_as_googleapis_auth: ^2.0.12
+
+  # Bluetooth POS Printing
+  blue_thermal_printer: ^1.2.3
 
   # Utils
   intl: ^0.19.0
@@ -46,6 +58,8 @@ dependencies:
 
 dev_dependencies:
   flutter_test:
+    sdk: flutter
+  integration_test:
     sdk: flutter
   flutter_lints: ^6.0.0
 

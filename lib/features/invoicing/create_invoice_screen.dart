@@ -77,6 +77,18 @@ class _CreateInvoiceScreenState extends ConsumerState<CreateInvoiceScreen> {
       ),
     );
 
+    // ── Unificación Financiera: Auto-insertar Ingreso ────────────────
+    final pMethodCode = _paymentMethod.toLowerCase().contains('efectivo') ? 'cash' : 'transfer';
+    await ref.read(incomesDaoProvider).insertIncome(
+      IncomesCompanion.insert(
+        amount: totalCents,
+        currency: _currency,
+        paymentMethod: pMethodCode,
+        description: 'Factura $_nextCorrelativo: ${_partyName.trim()}',
+        createdAt: drift.Value(DateTime.now()),
+      ),
+    );
+
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Factura $_nextCorrelativo registrada con éxito')),
