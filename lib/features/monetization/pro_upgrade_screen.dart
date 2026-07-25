@@ -58,7 +58,7 @@ class ProUpgradeScreen extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   Text(
-                    isPro ? '¡Ya eres Miembro PRO!' : 'Lleva tu Negocio al Siguiente Nivel',
+                    isPro ? '¡Modo PRO Activo!' : 'Potencia tu Negocio con CuentasClaras PRO',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white,
@@ -69,8 +69,8 @@ class ProUpgradeScreen extends ConsumerWidget {
                   const SizedBox(height: 6),
                   Text(
                     isPro
-                        ? 'Tienes acceso a todas las herramientas profesionales ilimitadas.'
-                        : 'Elimina anuncios, imprime en impresoras térmicas y personaliza tu marca.',
+                        ? 'Tienes acceso ilimitado a todas las funciones comerciales sin anuncios.'
+                        : 'Elimina anuncios, emite facturas con tu membrete e imprime tickets POS.',
                     textAlign: TextAlign.center,
                     style: const TextStyle(
                       color: Colors.white70,
@@ -87,7 +87,7 @@ class ProUpgradeScreen extends ConsumerWidget {
             const Align(
               alignment: Alignment.centerLeft,
               child: Text(
-                'Ventajas Exclusivas PRO:',
+                'Ventajas de la Versión PRO:',
                 style: TextStyle(
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
@@ -100,42 +100,43 @@ class ProUpgradeScreen extends ConsumerWidget {
             _buildBenefitTile(
               icon: Icons.block_rounded,
               title: '100% Libre de Anuncios',
-              subtitle: 'Opera tu punto de venta sin interrupciones publicitarias.',
+              subtitle: 'Opera sin banners ni anuncios publicitarios.',
               color: Colors.redAccent,
             ),
             const SizedBox(height: 10),
             _buildBenefitTile(
-              icon: Icons.print_rounded,
-              title: 'Impresión Térmica Bluetooth',
-              subtitle: 'Emite tickets físicos POS de 58mm y 80mm al instante.',
-              color: Colors.blueAccent,
+              icon: Icons.receipt_long,
+              title: 'Facturación & Correlativos Automáticos',
+              subtitle: 'Secuencia FACT-000001, membrete con RIF/NIT y logo de tu empresa.',
+              color: Colors.indigo,
             ),
             const SizedBox(height: 10),
             _buildBenefitTile(
-              icon: Icons.workspace_premium_rounded,
-              title: 'Marca de Agua & Logo Personalizado',
-              subtitle: 'Tus recibos en PDF y mensajes con tu propio logo y nombre.',
-              color: Colors.amber,
+              icon: Icons.access_time_filled,
+              title: 'Aging & Morosidad Avanzada',
+              subtitle: 'Análisis dinámico de morosidad a +90 días con exportación PDF.',
+              color: Colors.orange,
             ),
             const SizedBox(height: 10),
             _buildBenefitTile(
               icon: Icons.cloud_done_rounded,
-              title: 'Respaldo Cloud Automático',
-              subtitle: 'Sincroniza tus datos de forma segura en tu Google Drive.',
+              title: 'Respaldo Automático en Google Drive',
+              subtitle: 'Sincronización segura de tu base de datos en la nube.',
               color: AppColors.primary,
             ),
             const SizedBox(height: 10),
             _buildBenefitTile(
-              icon: Icons.calculate_rounded,
-              title: 'Módulos Avanzados por Rubro',
-              subtitle: 'Costeos de recetas para repostería y comisiones de barberos.',
-              color: Colors.purpleAccent,
+              icon: Icons.all_inclusive,
+              title: 'Clientes, Productos & Compras Ilimitados',
+              subtitle: 'Sin límites de catálogo ni directorio de proveedores.',
+              color: Colors.teal,
             ),
 
             const SizedBox(height: 30),
 
-            // ── Botón de Acción ──────────────────────────
+            // ── Botones de Subscripción ──────────────────
             if (!isPro) ...[
+              // Plan Mensual
               SizedBox(
                 width: double.infinity,
                 height: 52,
@@ -143,11 +144,11 @@ class ProUpgradeScreen extends ConsumerWidget {
                   onPressed: () async {
                     await ref
                         .read(monetizationProvider.notifier)
-                        .activateProTier();
+                        .activateProTier(durationDays: 30);
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('¡Bienvenido a CuentasClaras PRO!'),
+                          content: Text('¡Plan PRO Mensual activado (\$3.99/mes)!'),
                           backgroundColor: AppColors.primary,
                         ),
                       );
@@ -161,9 +162,9 @@ class ProUpgradeScreen extends ConsumerWidget {
                     ),
                     elevation: 3,
                   ),
-                  icon: const Icon(Icons.rocket_launch_rounded),
+                  icon: const Icon(Icons.star),
                   label: const Text(
-                    'Activar Plan PRO (\$2.99 / mes)',
+                    'Plan Mensual (\$3.99 / mes)',
                     style: TextStyle(
                       fontSize: 15,
                       fontWeight: FontWeight.bold,
@@ -172,6 +173,44 @@ class ProUpgradeScreen extends ConsumerWidget {
                 ),
               ),
               const SizedBox(height: 12),
+              // Plan Anual
+              SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton.icon(
+                  onPressed: () async {
+                    await ref
+                        .read(monetizationProvider.notifier)
+                        .activateProTier(durationDays: 365);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('¡Plan PRO Anual activado (\$29.99/año)! Ahorras 37%'),
+                          backgroundColor: Colors.teal,
+                        ),
+                      );
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.teal.shade700,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    elevation: 3,
+                  ),
+                  icon: const Icon(Icons.rocket_launch_rounded),
+                  label: const Text(
+                    'Plan Anual (\$29.99 / año - Ahorra 37%)',
+                    style: TextStyle(
+                      fontSize: 14,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              // Video Recompensado 24h
               OutlinedButton.icon(
                 onPressed: () async {
                   await ref
@@ -181,7 +220,7 @@ class ProUpgradeScreen extends ConsumerWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text(
-                          '¡Has desbloqueado funciones PRO por 24h tras ver el video!',
+                          '¡Has activado PRO por 24h gratis viendo el video!',
                         ),
                       ),
                     );
@@ -207,7 +246,7 @@ class ProUpgradeScreen extends ConsumerWidget {
                     if (context.mounted) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Suscripción cambiada a Modo Gratuito'),
+                          content: Text('Modo de prueba cambiado a Versión Gratuita'),
                         ),
                       );
                     }
