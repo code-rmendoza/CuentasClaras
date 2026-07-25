@@ -8,6 +8,9 @@ import '../../data/database/daos/incomes_dao.dart';
 import '../../data/database/daos/expenses_dao.dart';
 import '../../data/database/daos/daily_cash_dao.dart';
 import '../../data/database/daos/inventory_dao.dart';
+import '../../data/database/daos/invoices_dao.dart';
+import '../../data/database/daos/suppliers_dao.dart';
+import '../../data/database/daos/company_profile_dao.dart';
 
 /// Provider global de la base de datos.
 ///
@@ -58,7 +61,37 @@ final inventoryDaoProvider = Provider<InventoryDao>((ref) {
   return ref.watch(databaseProvider).inventoryDao;
 });
 
+/// Provider para el DAO de facturas.
+final invoicesDaoProvider = Provider<InvoicesDao>((ref) {
+  return ref.watch(databaseProvider).invoicesDao;
+});
+
+/// Provider para el DAO de proveedores.
+final suppliersDaoProvider = Provider<SuppliersDao>((ref) {
+  return ref.watch(databaseProvider).suppliersDao;
+});
+
+/// Provider para el DAO del perfil de empresa.
+final companyProfileDaoProvider = Provider<CompanyProfileDao>((ref) {
+  return ref.watch(databaseProvider).companyProfileDao;
+});
+
 // ── Streams reactivos ────────────────────────────────────────
+
+/// Stream del perfil de empresa.
+final companyProfileStreamProvider = StreamProvider<CompanyProfileData>((ref) {
+  return ref.watch(companyProfileDaoProvider).watchCompanyProfile();
+});
+
+/// Stream de todos los proveedores.
+final allSuppliersProvider = StreamProvider<List<Supplier>>((ref) {
+  return ref.watch(suppliersDaoProvider).watchAllSuppliers();
+});
+
+/// Stream de todas las facturas.
+final allInvoicesProvider = StreamProvider<List<Invoice>>((ref) {
+  return ref.watch(invoicesDaoProvider).watchAllInvoices();
+});
 
 /// Stream de todos los clientes.
 final allClientsProvider = StreamProvider<List<Client>>((ref) {

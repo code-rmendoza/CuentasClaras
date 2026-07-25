@@ -17,6 +17,15 @@ import '../../features/inmobiliaria/properties_screen.dart';
 import '../../features/pos/pos_screen.dart';
 import '../../features/incomes/register_income_screen.dart';
 import '../../features/settings/backup_restore_screen.dart';
+import '../../features/aging/aging_screen.dart';
+import '../../features/purchases/purchases_screen.dart';
+import '../../features/users/users_screen.dart';
+import '../../features/settings/company_profile_screen.dart';
+import '../../features/invoicing/invoices_list_screen.dart';
+import '../../features/invoicing/create_invoice_screen.dart';
+import '../../features/invoicing/invoice_detail_screen.dart';
+import '../../features/purchases/suppliers_list_screen.dart';
+import '../../features/purchases/create_purchase_screen.dart';
 
 /// Configuración de rutas de CuentasClaras Mini ERP Lite.
 class AppRouter {
@@ -40,6 +49,15 @@ class AppRouter {
   static const String inmobiliaria = '/inmobiliaria';
   static const String pos = '/pos';
   static const String backupRestore = '/backup-restore';
+  static const String aging = '/aging';
+  static const String purchases = '/purchases';
+  static const String users = '/users';
+  static const String companyProfile = '/company-profile';
+  static const String invoices = '/invoices';
+  static const String createInvoice = '/invoices/new';
+  static const String invoiceDetail = '/invoices/:id';
+  static const String suppliers = '/suppliers';
+  static const String createPurchase = '/purchases/new';
 
   static final GoRouter router = GoRouter(
     initialLocation: home,
@@ -167,6 +185,60 @@ class AppRouter {
         path: backupRestore,
         name: 'backupRestore',
         builder: (context, state) => const BackupRestoreScreen(),
+      ),
+      GoRoute(
+        path: aging,
+        name: 'aging',
+        builder: (context, state) => const AgingScreen(),
+      ),
+      GoRoute(
+        path: purchases,
+        name: 'purchases',
+        builder: (context, state) => const PurchasesScreen(),
+      ),
+      GoRoute(
+        path: users,
+        name: 'users',
+        builder: (context, state) => const UsersScreen(),
+      ),
+      GoRoute(
+        path: companyProfile,
+        name: 'companyProfile',
+        builder: (context, state) => const CompanyProfileScreen(),
+      ),
+      GoRoute(
+        path: invoices,
+        name: 'invoices',
+        builder: (context, state) => const InvoicesListScreen(),
+      ),
+      GoRoute(
+        path: createInvoice,
+        name: 'createInvoice',
+        builder: (context, state) => const CreateInvoiceScreen(),
+      ),
+      GoRoute(
+        path: invoiceDetail,
+        name: 'invoiceDetail',
+        builder: (context, state) {
+          final id = int.tryParse(state.pathParameters['id'] ?? '');
+          if (id == null) {
+            return Scaffold(
+              appBar: AppBar(title: const Text('Error')),
+              body: const Center(child: Text('ID de factura inválido')),
+            );
+          }
+          return InvoiceDetailScreen(invoiceId: id);
+        },
+      ),
+      GoRoute(
+        path: suppliers,
+        name: 'suppliers',
+        builder: (context, state) => const SuppliersListScreen(),
+      ),
+      GoRoute(
+        path: createPurchase,
+        name: 'createPurchase',
+        builder: (context, state) => const CreatePurchaseScreen(),
       ),
     ],
   );

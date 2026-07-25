@@ -13,6 +13,10 @@ import 'tables/incomes_table.dart';
 import 'tables/expenses_table.dart';
 import 'tables/daily_cash_table.dart';
 import 'tables/inventory_table.dart';
+import 'tables/invoices_table.dart';
+import 'tables/suppliers_table.dart';
+import 'tables/users_table.dart';
+import 'tables/company_profile_table.dart';
 import 'daos/clients_dao.dart';
 import 'daos/debts_dao.dart';
 import 'daos/payments_dao.dart';
@@ -21,6 +25,9 @@ import 'daos/incomes_dao.dart';
 import 'daos/expenses_dao.dart';
 import 'daos/daily_cash_dao.dart';
 import 'daos/inventory_dao.dart';
+import 'daos/invoices_dao.dart';
+import 'daos/suppliers_dao.dart';
+import 'daos/company_profile_dao.dart';
 
 part 'app_database.g.dart';
 
@@ -39,6 +46,10 @@ part 'app_database.g.dart';
     Expenses,
     DailyCashRegister,
     Inventory,
+    Invoices,
+    Suppliers,
+    Users,
+    CompanyProfile,
   ],
   daos: [
     ClientsDao,
@@ -49,6 +60,9 @@ part 'app_database.g.dart';
     ExpensesDao,
     DailyCashDao,
     InventoryDao,
+    InvoicesDao,
+    SuppliersDao,
+    CompanyProfileDao,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -72,6 +86,12 @@ class AppDatabase extends _$AppDatabase {
           await m.createTable(expenses);
           await m.createTable(dailyCashRegister);
           await m.createTable(inventory);
+        }
+        if (from < 4) {
+          await m.createTable(invoices);
+          await m.createTable(suppliers);
+          await m.createTable(users);
+          await m.createTable(companyProfile);
         }
       },
     );

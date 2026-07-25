@@ -110,6 +110,12 @@ class CurrencyUtils {
     return double.tryParse(value.replaceAll(',', '.'));
   }
 
+  /// Parsea un string numérico a centavos enteros.
+  static int parseToCents(String value) {
+    final amount = parseAmount(value) ?? 0.0;
+    return amountToCents(amount);
+  }
+
   /// Retorna la cantidad de decimales estándar para una moneda.
   static int _getDecimalDigits(String currency) {
     switch (currency) {

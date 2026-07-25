@@ -26,6 +26,55 @@ class SettingsScreen extends ConsumerWidget {
       body: ListView(
         padding: const EdgeInsets.all(AppTheme.spacingMd),
         children: [
+          // ── Módulos del Sistema ──────────────────────────
+          const _SectionHeader(title: 'Módulos & Gestión Comercial'),
+          Card(
+            child: Column(
+              children: [
+                ListTile(
+                  leading: const Icon(Icons.receipt_long, color: Colors.indigo),
+                  title: const Text('Facturación & Comprobantes'),
+                  subtitle: const Text('Emitir facturas, notas y correlativos automáticos'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/invoices'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.business_center, color: Colors.blue),
+                  title: const Text('Perfil del Negocio / Empresa'),
+                  subtitle: const Text('Nombre, RIF/NIT, dirección y membrete'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/company-profile'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.access_time_filled, color: Colors.orange),
+                  title: const Text('Aging CxC / CxP (Mora)'),
+                  subtitle: const Text('Análisis de antigüedad de saldos vencidos'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/aging'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.shopping_bag, color: Colors.purple),
+                  title: const Text('Compras & Proveedores'),
+                  subtitle: const Text('Facturas de compra y Cuentas por Pagar'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/purchases'),
+                ),
+                const Divider(height: 1),
+                ListTile(
+                  leading: const Icon(Icons.people_alt, color: Colors.teal),
+                  title: const Text('Usuarios & Permisos'),
+                  subtitle: const Text('Roles (Admin, Vendedor, Cajero) y accesos'),
+                  trailing: const Icon(Icons.chevron_right),
+                  onTap: () => context.push('/users'),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: AppTheme.spacingLg),
+
           // ── Perfil de Negocio ────────────────────────────
           const _SectionHeader(title: 'Perfil de Negocio & Rubro'),
           Card(
