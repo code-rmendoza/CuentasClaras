@@ -442,9 +442,9 @@ class HomeScreen extends ConsumerWidget {
         ],
       ),
       floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(AppRouter.registerDebt),
-        icon: const Icon(Icons.add_rounded, size: 20),
-        label: const Text('Nuevo Fiado'),
+        onPressed: () => context.push('/invoices/new'),
+        icon: const Icon(Icons.point_of_sale_rounded, size: 20),
+        label: const Text('Nueva Venta / POS'),
         heroTag: 'fab_home',
       ),
     );

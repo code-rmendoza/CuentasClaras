@@ -100,7 +100,7 @@ class ClientDetailScreen extends ConsumerWidget {
         onPressed: () =>
             context.push('${AppRouter.registerDebt}?clientId=$clientId'),
         icon: const Icon(Icons.add),
-        label: const Text('Nuevo Fiado'),
+        label: const Text('Registrar Deuda / Fiado'),
         heroTag: 'fab_client_detail',
       ),
     );
