@@ -6,7 +6,6 @@ import '../../features/clients/client_detail_screen.dart';
 import '../../features/debts/register_debt_screen.dart';
 import '../../features/debts/register_payment_screen.dart';
 import '../../features/products/products_screen.dart';
-import '../../features/reports/reports_screen.dart';
 import '../../features/export/export_screen.dart';
 import '../../features/settings/settings_screen.dart';
 import '../../features/onboarding/business_onboarding_screen.dart';
@@ -75,17 +74,24 @@ class AppRouter {
             ),
           ),
           GoRoute(
+            path: invoices,
+            name: 'invoices',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: InvoicesListScreen(),
+            ),
+          ),
+          GoRoute(
+            path: products,
+            name: 'products',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: ProductsScreen(),
+            ),
+          ),
+          GoRoute(
             path: clients,
             name: 'clients',
             pageBuilder: (context, state) => const NoTransitionPage(
               child: ClientsScreen(),
-            ),
-          ),
-          GoRoute(
-            path: reports,
-            name: 'reports',
-            pageBuilder: (context, state) => const NoTransitionPage(
-              child: ReportsScreen(),
             ),
           ),
           GoRoute(
@@ -253,9 +259,10 @@ class MainShell extends StatelessWidget {
   static int _calculateSelectedIndex(BuildContext context) {
     final location = GoRouterState.of(context).uri.path;
     if (location == AppRouter.home) return 0;
-    if (location.startsWith('/clients')) return 1;
-    if (location.startsWith('/reports')) return 2;
-    if (location.startsWith('/settings')) return 3;
+    if (location.startsWith('/invoices')) return 1;
+    if (location.startsWith('/products')) return 2;
+    if (location.startsWith('/clients')) return 3;
+    if (location.startsWith('/settings')) return 4;
     return 0;
   }
 
@@ -272,10 +279,12 @@ class MainShell extends StatelessWidget {
             case 0:
               context.go(AppRouter.home);
             case 1:
-              context.go(AppRouter.clients);
+              context.go(AppRouter.invoices);
             case 2:
-              context.go(AppRouter.reports);
+              context.go(AppRouter.products);
             case 3:
+              context.go(AppRouter.clients);
+            case 4:
               context.go(AppRouter.settings);
           }
         },
@@ -286,19 +295,24 @@ class MainShell extends StatelessWidget {
             label: 'Inicio',
           ),
           NavigationDestination(
+            icon: Icon(Icons.receipt_long_outlined),
+            selectedIcon: Icon(Icons.receipt_long),
+            label: 'Facturación',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.inventory_2_outlined),
+            selectedIcon: Icon(Icons.inventory_2),
+            label: 'Inventario',
+          ),
+          NavigationDestination(
             icon: Icon(Icons.people_outline),
             selectedIcon: Icon(Icons.people),
-            label: 'Clientes',
+            label: 'Cobros (CxC)',
           ),
           NavigationDestination(
-            icon: Icon(Icons.bar_chart_outlined),
-            selectedIcon: Icon(Icons.bar_chart),
-            label: 'Reportes',
-          ),
-          NavigationDestination(
-            icon: Icon(Icons.settings_outlined),
-            selectedIcon: Icon(Icons.settings),
-            label: 'Ajustes',
+            icon: Icon(Icons.tune_outlined),
+            selectedIcon: Icon(Icons.tune),
+            label: 'Ajustes ERP',
           ),
         ],
       ),

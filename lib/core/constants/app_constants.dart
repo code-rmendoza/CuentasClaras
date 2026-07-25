@@ -6,7 +6,7 @@ class AppConstants {
   static const String appName = 'CuentasClaras';
   static const String appVersion = '0.1.0';
   static const String appDescription =
-      'Gestión de fiados para comerciantes';
+      'CuentasClaras - Sistema Mini ERP Comercial Multimoneda';
 
   // ── Database ──────────────────────────────────────────────
   static const String databaseName = 'cuentas_claras.db';
