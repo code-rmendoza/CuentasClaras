@@ -240,6 +240,58 @@ class HomeScreen extends ConsumerWidget {
                       ),
                     ],
                   ),
+                  const SizedBox(height: AppTheme.spacingSm),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionTile(
+                          context,
+                          title: 'Facturación',
+                          subtitle: 'Correlativo auto',
+                          icon: Icons.receipt_long,
+                          accentColor: Colors.indigo,
+                          onTap: () => context.push('/invoices'),
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacingSm),
+                      Expanded(
+                        child: _buildActionTile(
+                          context,
+                          title: 'Aging (Mora)',
+                          subtitle: 'Rangos de días',
+                          icon: Icons.access_time_filled,
+                          accentColor: Colors.orange,
+                          onTap: () => context.push('/aging'),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: AppTheme.spacingSm),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: _buildActionTile(
+                          context,
+                          title: 'Compras & CxP',
+                          subtitle: 'Proveedores',
+                          icon: Icons.shopping_bag,
+                          accentColor: Colors.purple,
+                          onTap: () => context.push('/purchases'),
+                        ),
+                      ),
+                      const SizedBox(width: AppTheme.spacingSm),
+                      Expanded(
+                        child: _buildActionTile(
+                          context,
+                          title: 'Perfil Empresa',
+                          subtitle: 'RIF/Membrete',
+                          icon: Icons.business_center,
+                          accentColor: Colors.blue,
+                          onTap: () => context.push('/company-profile'),
+                        ),
+                      ),
+                    ],
+                  ),
                 ],
               ),
             ),
