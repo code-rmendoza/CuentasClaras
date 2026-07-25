@@ -20,11 +20,14 @@ subprojects {
     val configureNamespace = Action<Project> {
         if (plugins.hasPlugin("com.android.library")) {
             val android = extensions.findByType(com.android.build.gradle.LibraryExtension::class.java)
-            if (android != null && android.namespace == null) {
-                if (name == "blue_thermal_printer") {
-                    android.namespace = "id.kakzaki.blue_thermal_printer"
-                } else {
-                    android.namespace = "id.flutter.plugins.${name.replace("-", "_")}"
+            if (android != null) {
+                android.compileSdk = 35
+                if (android.namespace == null) {
+                    if (name == "blue_thermal_printer") {
+                        android.namespace = "id.kakzaki.blue_thermal_printer"
+                    } else {
+                        android.namespace = "id.flutter.plugins.${name.replace("-", "_")}"
+                    }
                 }
             }
         }
